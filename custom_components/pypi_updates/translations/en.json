@@ -1,0 +1,46 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Device is already configured"
+    },
+    "error": {
+      "missing_selection": "Nothing selected",
+      "missing_pypi_package": "Pypi package does not exist",
+      "unknown": "Unexpected error"
+    },
+    "step": {
+      "user": {
+        "title": "PyPi updates",
+        "data": {
+          "pypi_list": "PyPi packages to check for updates",
+          "pypi_item": "PyPi package to add",
+          "hours_between_check": "Hours between check for new updates",
+          "clear_update_after_hours": "Clear updates after",
+          "add_more": "Add more"
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "already_configured": "Device is already configured"
+    },
+    "error": {
+      "missing_selection": "Nothing selected",
+      "missing_pypi_package": "Pypi package does not exist",
+      "unknown": "Unexpected error"
+    },
+    "step": {
+      "init": {
+        "title": "PyPi updates",
+        "data": {
+          "pypi_list": "PyPi packages to check for updates",
+          "pypi_item": "PyPi package to add",
+          "hours_between_check": "Hours between check for new updates",
+          "clear_update_after_hours": "Clear updates after",
+          "add_more": "Add more"
+        }
+      }
+    }
+  }
+}

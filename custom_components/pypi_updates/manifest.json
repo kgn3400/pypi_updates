@@ -1,0 +1,14 @@
+{
+  "domain": "pypi_updates",
+  "name": "PyPi updates",
+  "codeowners": ["@kgn3400"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/kgn3400/hiper_driftsstatus_dk",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "requirements": ["jsonpickle"],
+  "ssdp": [],
+  "zeroconf": [],
+  "version": "1.0.0"
+}
