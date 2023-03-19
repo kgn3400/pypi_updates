@@ -4,13 +4,15 @@
 import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-
-from aiohttp.client import ClientSession, ClientConnectionError
-import async_timeout
-from homeassistant.core import ServiceCall
 import json
-from .pypi_settings import PyPiSettings, PyPiBaseItem, PyPiItem, PypiStatusTypes
+
+from aiohttp.client import ClientConnectionError, ClientSession
+import async_timeout
+
+from homeassistant.core import ServiceCall
+
 from .const import LOGGER
+from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
 
 
 # ------------------------------------------------------------------
@@ -78,6 +80,17 @@ class ComponentApi:
         if save_settings:
             self.settings.pypi_list.sort(key=sort_key)
             self.settings.write_settings()
+
+    # ------------------------------------------------------------------
+    async def reset_service(self, call: ServiceCall) -> None:
+        """Pypi reset service"""
+
+        for item in self.settings.pypi_list:
+            if item.status == PypiStatusTypes.UPDATED:
+                item.status = PypiStatusTypes.OK
+
+        self.settings.write_settings()
+        await self.go_update()
 
     # ------------------------------------------------------------------
     async def update_service(self, call: ServiceCall) -> None:
@@ -161,8 +174,7 @@ class ComponentApi:
                 )
                 tmp_updates = True
 
-        if tmp_updates:
-            self.updates = True
+        self.updates = tmp_updates
 
     # ------------------------------------------------------------------
     async def check_pypi_for_update(self) -> None:
