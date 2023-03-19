@@ -19,7 +19,23 @@ class PypiStatusTypes(Enum):
 
 # ------------------------------------------------------
 # ------------------------------------------------------
-class PyPiItem:
+class PyPiBaseItem:
+    """Pypi Base item"""
+
+    def __init__(
+        self,
+        package_name: str = "",
+        version: str = "",
+        old_version: str = "",
+    ) -> None:
+        self.package_name: str = package_name
+        self.version: str = version
+        self.old_version: str = old_version
+
+
+# ------------------------------------------------------
+# ------------------------------------------------------
+class PyPiItem(PyPiBaseItem):
     """Pypi item"""
 
     def __init__(
@@ -30,9 +46,7 @@ class PyPiItem:
         last_update: datetime = datetime.now(),
         status: PypiStatusTypes = PypiStatusTypes.OK,
     ) -> None:
-        self.package_name: str = package_name
-        self.version: str = version
-        self.old_version: str = old_version
+        super().__init__(package_name, version, old_version)
         self.last_update: datetime = last_update
         self.status: PypiStatusTypes = status
 

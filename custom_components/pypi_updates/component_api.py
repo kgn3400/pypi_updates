@@ -9,7 +9,7 @@ from aiohttp.client import ClientSession, ClientConnectionError
 import async_timeout
 from homeassistant.core import ServiceCall
 import json
-from .pypi_settings import PyPiSettings, PyPiItem, PypiStatusTypes
+from .pypi_settings import PyPiSettings, PyPiBaseItem, PyPiItem, PypiStatusTypes
 from .const import LOGGER
 
 
@@ -35,7 +35,10 @@ class ComponentApi:
         self.first_time: bool = True
         self.updates: bool = False
         """Any updates in pypi list binary sensor"""
+        self.pypi_updates: list[PyPiBaseItem] = []
         self.markdown: str = ""
+        self.last_full_update: datetime = datetime.now()
+
         self.settings: PyPiSettings = PyPiSettings()
         self.settings.read_settings()
 
@@ -80,12 +83,20 @@ class ComponentApi:
     async def update_service(self, call: ServiceCall) -> None:
         """Pypi updates service"""
 
-        await self.go_update()
+        await self.go_update(True)
 
     # ------------------------------------------------------------------
-    async def go_update(self) -> None:
-        """Pypi go updates"""
-        await self.check_pypi_for_update()
+    async def go_update(self, force_update: bool = False) -> None:
+        """Go updates"""
+
+        if (
+            force_update
+            or (self.last_full_update + timedelta(hours=self.hours_between_updates))
+            < datetime.now()
+        ):
+            await self.check_pypi_for_update()
+            self.last_full_update = datetime.now()
+
         await self.check_update_status()
         await self.create_markdown()
 
@@ -95,30 +106,30 @@ class ComponentApi:
         if self.first_time:
             self.first_time = False
             await self.startup()
-
-        await self.go_update()
+            await self.go_update(True)
+        else:
+            await self.go_update()
 
     # ------------------------------------------------------------------
     async def create_markdown(self) -> None:
-        """Check updates status"""
+        """Create markdown"""
         if self.updates:
             tmp_md: str = (
                 "### <font color= dodgerblue>"
                 + '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
             )
-            for item in self.settings.pypi_list:
-                if item.status == PypiStatusTypes.UPDATED:
-                    tmp_md += (
-                        "- ["
-                        + item.package_name.capitalize()
-                        + "](https://www.pypi.org/project/"
-                        + item.package_name
-                        + ") updated to version **"
-                        + item.version
-                        + "** from "
-                        + item.old_version
-                        + "\r"
-                    )
+            for item in self.pypi_updates:
+                tmp_md += (
+                    "- ["
+                    + item.package_name.capitalize()
+                    + "](https://www.pypi.org/project/"
+                    + item.package_name
+                    + ") updated to version **"
+                    + item.version
+                    + "** from "
+                    + item.old_version
+                    + "\r"
+                )
             self.markdown = tmp_md
         else:
             self.markdown = (
@@ -131,6 +142,7 @@ class ComponentApi:
     async def check_update_status(self) -> None:
         """Check updates status"""
         tmp_updates: bool = False
+        self.pypi_updates.clear()
 
         for item in self.settings.pypi_list:
             if (
@@ -140,6 +152,13 @@ class ComponentApi:
             ):
                 item.status = PypiStatusTypes.OK
             elif item.status == PypiStatusTypes.UPDATED:
+                self.pypi_updates.append(
+                    PyPiBaseItem(
+                        item.package_name,
+                        item.version,
+                        item.old_version,
+                    )
+                )
                 tmp_updates = True
 
         if tmp_updates:

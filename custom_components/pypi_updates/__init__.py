@@ -19,7 +19,7 @@ from .const import (
 )
 from .component_api import ComponentApi
 
-PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.SENSOR]
+PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR]
 
 
 # ------------------------------------------------------------------
