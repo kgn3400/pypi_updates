@@ -10,6 +10,7 @@ from aiohttp.client import ClientConnectionError, ClientSession
 import async_timeout
 
 from homeassistant.core import ServiceCall
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import LOGGER
 from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
@@ -40,6 +41,7 @@ class ComponentApi:
         self.pypi_updates: list[PyPiBaseItem] = []
         self.markdown: str = ""
         self.last_full_update: datetime = datetime.now()
+        self.coordinator: DataUpdateCoordinator
 
         self.settings: PyPiSettings = PyPiSettings()
         self.settings.read_settings()
@@ -59,12 +61,10 @@ class ComponentApi:
             return item.package_name
 
         # Delete part
-        for num in range(len(self.settings.pypi_list) - 1, -1, -1):
-            item: PyPiItem = self.settings.pypi_list[num]
-
+        for index, item in reversed(list(enumerate(self.settings.pypi_list))):
             if item.package_name not in self.pypi_list:
                 save_settings = True
-                del self.settings.pypi_list[num]
+                del self.settings.pypi_list[index]
 
         # Add new items
         cur_package: list = [itemx.package_name for itemx in self.settings.pypi_list]
@@ -97,6 +97,7 @@ class ComponentApi:
         """Pypi updates service"""
 
         await self.go_update(True)
+        await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
     async def go_update(self, force_update: bool = False) -> None:
@@ -129,26 +130,22 @@ class ComponentApi:
         if self.updates:
             tmp_md: str = (
                 "### <font color= dodgerblue>"
-                + '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
+                '  <ha-icon icon="mdi:package-variant"></ha-icon></font>'
+                " Pypi package updates\r"
             )
             for item in self.pypi_updates:
                 tmp_md += (
-                    "- ["
-                    + item.package_name.capitalize()
-                    + "](https://www.pypi.org/project/"
-                    + item.package_name
-                    + ") updated to version **"
-                    + item.version
-                    + "** from "
-                    + item.old_version
-                    + "\r"
+                    f"- [{item.package_name.capitalize()}"
+                    f"](https://www.pypi.org/project/{item.package_name}"
+                    f") updated to version **{item.version}"
+                    f"** from {item.old_version}\r"
                 )
             self.markdown = tmp_md
         else:
             self.markdown = (
                 "### <font color= dodgerblue>"
-                + '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
-                + "- No updates"
+                '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
+                "- No updates"
             )
 
     # ------------------------------------------------------------------

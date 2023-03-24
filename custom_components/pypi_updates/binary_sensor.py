@@ -7,9 +7,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
+from .component_api import ComponentApi
 from .const import DOMAIN
 from .entity import ComponentEntity
-from .component_api import ComponentApi
 
 
 # ------------------------------------------------------
@@ -71,8 +71,8 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     def extra_state_attributes(self) -> dict:
         attr: dict = {}
 
-        # attr["pypi_updates"] = self.component_api.pypi_updates
-        attr["pypi_updates"] = [obj.__dict__ for obj in self.component_api.pypi_updates]
+        attr["pypi_updates"] = self.component_api.pypi_updates
+        # attr["pypi_updates"] = [obj.__dict__ for obj in self.component_api.pypi_updates]
         attr["markdown"] = self.component_api.markdown
         return attr
 

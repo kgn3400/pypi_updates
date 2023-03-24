@@ -2,6 +2,7 @@
 from .settings_json import SettingsJson
 from datetime import datetime
 from enum import Enum
+from dataclasses import dataclass
 
 
 # ------------------------------------------------------
@@ -19,6 +20,7 @@ class PypiStatusTypes(Enum):
 
 # ------------------------------------------------------
 # ------------------------------------------------------
+@dataclass
 class PyPiBaseItem:
     """Pypi Base item"""
 
@@ -35,6 +37,7 @@ class PyPiBaseItem:
 
 # ------------------------------------------------------
 # ------------------------------------------------------
+@dataclass
 class PyPiItem(PyPiBaseItem):
     """Pypi item"""
 
