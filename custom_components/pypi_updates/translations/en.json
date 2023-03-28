@@ -10,6 +10,7 @@
     },
     "step": {
       "user": {
+        "title": "PyPi updates",
         "data": {
           "pypi_list": "PyPi packages to check for updates",
           "pypi_item": "PyPi package to add",
@@ -31,6 +32,7 @@
     },
     "step": {
       "init": {
+        "title": "PyPi updates",
         "data": {
           "pypi_list": "PyPi packages to check for updates",
           "pypi_item": "PyPi package to add",
