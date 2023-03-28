@@ -31,7 +31,7 @@
       "unknown": "Unexpected error"
     },
     "step": {
-      "init": {
+      "option": {
         "title": "PyPi updates",
         "data": {
           "pypi_list": "PyPi packages to check for updates",
