@@ -2,26 +2,26 @@
 from __future__ import annotations
 
 from typing import Any
+
 import voluptuous as vol
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 #  from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
 )
-from .component_api import FindPyPiPackage
 
+from .component_api import FindPyPiPackage
 from .const import (
-    CONF_HOURS_BETWEEN_CHECK,
     CONF_ADD_MORE,
     CONF_CLEAR_UPDATES_AFTER_HOURS,
+    CONF_HOURS_BETWEEN_CHECK,
     CONF_PYPI_ITEM,
     CONF_PYPI_LIST,
     DOMAIN,
@@ -105,7 +105,7 @@ def _create_form(
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
 class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for HiperDrift"""
+    """Handle a config flow for Pypi updates."""
 
     VERSION = 1
 
@@ -165,7 +165,7 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
 class OptionsFlowHandler(OptionsFlow):
-    """Options flow for Pypi updates"""
+    """Options flow for Pypi updates."""
 
     def __init__(
         self,
@@ -216,21 +216,3 @@ class OptionsFlowHandler(OptionsFlow):
             data_schema=_create_form(user_input),
             errors=errors,
         )
-
-
-# ------------------------------------------------------------------
-# ------------------------------------------------------------------
-class MissingSelection(HomeAssistantError):
-    """Error to indicate nothing was selected."""
-
-
-# ------------------------------------------------------------------
-# ------------------------------------------------------------------
-class MissingCity(HomeAssistantError):
-    """Error to indicate nothing was selected."""
-
-
-# ------------------------------------------------------------------
-# ------------------------------------------------------------------
-class MissingStreet(HomeAssistantError):
-    """Error to indicate nothing was selected."""

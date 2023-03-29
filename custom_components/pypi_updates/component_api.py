@@ -135,10 +135,9 @@ class ComponentApi:
             )
             for item in self.pypi_updates:
                 tmp_md += (
-                    f"- [{item.package_name.capitalize()}"
-                    f"](https://www.pypi.org/project/{item.package_name}"
-                    f") updated to version **{item.version}"
-                    f"** from {item.old_version}\r"
+                    f"- [{item.package_name.capitalize()}]"
+                    f"(https://www.pypi.org/project/{item.package_name})"
+                    f" updated to version **{item.version}** from {item.old_version}\r"
                 )
             self.markdown = tmp_md
         else:

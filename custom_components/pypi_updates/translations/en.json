@@ -10,13 +10,12 @@
     },
     "step": {
       "user": {
-        "title": "PyPi updates",
         "data": {
-          "pypi_list": "PyPi packages to check for updates",
-          "pypi_item": "PyPi package to add",
-          "hours_between_check": "Hours between check for new updates",
+          "add_more": "Add more",
           "clear_update_after_hours": "Clear updates after",
-          "add_more": "Add more"
+          "hours_between_check": "Hours between check for new updates",
+          "pypi_item": "PyPi package to add",
+          "pypi_list": "PyPi packages to check for updates"
         }
       }
     }
@@ -31,14 +30,13 @@
       "unknown": "Unexpected error"
     },
     "step": {
-      "option": {
-        "title": "PyPi updates",
+      "init": {
         "data": {
-          "pypi_list": "PyPi packages to check for updates",
-          "pypi_item": "PyPi package to add",
-          "hours_between_check": "Hours between check for new updates",
+          "add_more": "Add more",
           "clear_update_after_hours": "Clear updates after",
-          "add_more": "Add more"
+          "hours_between_check": "Hours between check for new updates",
+          "pypi_item": "PyPi package to add",
+          "pypi_list": "PyPi packages to check for updates"
         }
       }
     }
