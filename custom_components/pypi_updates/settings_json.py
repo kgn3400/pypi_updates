@@ -1,14 +1,14 @@
-""" Settings handling"""
+"""Settings handling."""
 # pylint: disable=unspecified-encoding, attribute-defined-outside-init
 
-from os import path, remove, sep, mkdir
+from os import mkdir, path, remove, sep
 
 import jsonpickle
 
 
 # ------------------------------------------------------------------
 class SettingsJson:
-    """Settings class"""
+    """Settings class."""
 
     _REL_PATH: str = "userfiles"
     _SETTING_FILENAME: str = "settings.json"
@@ -16,7 +16,7 @@ class SettingsJson:
 
     # ------------------------------------------------------------------
     def set_settings_file_name(self, settings_file: str = "") -> None:
-        """set_settings_file_name"""
+        """set_settings_file_name."""
 
         if settings_file == "":
             self.__settings_file__ = (
@@ -31,14 +31,14 @@ class SettingsJson:
 
     # ------------------------------------------------------------------
     def read_settings(self, settings_file: str = "") -> None:
-        """read_settings"""
+        """read_settings."""
         if hasattr(self, "__dict__") is False:
             return
 
         self.set_settings_file_name(settings_file)
 
         try:
-            with open(self.__settings_file__, "r") as settingsfile:
+            with open(self.__settings_file__) as settingsfile:
                 tmp_obj = jsonpickle.decode(settingsfile.read())
 
                 if hasattr(tmp_obj, "__dict__") is False:
@@ -51,6 +51,7 @@ class SettingsJson:
 
     # ------------------------------------------------------------------
     def __getstate__(self) -> dict:
+        """Get state."""
         tmp_dict = self.__dict__.copy()
         del tmp_dict["__write_underscore_attributes__"]
         del tmp_dict["__settings_file__"]
@@ -73,7 +74,7 @@ class SettingsJson:
     def write_settings(
         self, unpicklable: bool = True, write_underscore_attributes: bool = False
     ) -> None:
-        """write settings"""
+        """Write settings."""
 
         if path.exists(path.dirname(self.__settings_file__)) is not True:
             mkdir(path.dirname(self.__settings_file__))
@@ -88,7 +89,7 @@ class SettingsJson:
 
     # ------------------------------------------------------------------
     def delete_settings(self, settings_file: str = "") -> bool:
-        """Delete settings"""
+        """Delete settings."""
         if self.__settings_file__ == "" or settings_file != "":
             self.set_settings_file_name(settings_file)
 

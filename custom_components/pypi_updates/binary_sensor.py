@@ -1,4 +1,4 @@
-"""Support for Pypi updates"""
+"""Support for Pypi updates."""
 from __future__ import annotations
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
@@ -18,7 +18,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Setup for Pypi updates"""
+    """Entry for Pypi updates setup."""
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     component_api: ComponentApi = hass.data[DOMAIN][entry.entry_id]["component_api"]
 
@@ -32,7 +32,7 @@ async def async_setup_entry(
 # ------------------------------------------------------
 # ------------------------------------------------------
 class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
-    """Sensor class for Pypi updates"""
+    """Sensor class for Pypi updates."""
 
     # ------------------------------------------------------
     def __init__(
@@ -41,6 +41,13 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
         entry: ConfigEntry,
         component_api: ComponentApi,
     ) -> None:
+        """Binary sensor.
+
+        Args:
+            coordinator (DataUpdateCoordinator): _description_
+            entry (ConfigEntry): _description_
+            component_api (ComponentApi): _description_
+        """
         super().__init__(coordinator, entry)
 
         self.component_api = component_api
@@ -52,11 +59,22 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     # ------------------------------------------------------
     @property
     def name(self) -> str:
+        """Name.
+
+        Returns:
+            str: Name of sensor
+
+        """
         return self._name
 
     # ------------------------------------------------------
     @property
     def icon(self) -> str:
+        """Icon.
+
+        Returns:
+            str: Icon name
+        """
         return "mdi:package-variant"
 
     # ------------------------------------------------------
@@ -69,6 +87,11 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     # ------------------------------------------------------
     @property
     def extra_state_attributes(self) -> dict:
+        """Extra state attributes.
+
+        Returns:
+            dict: _description_
+        """
         attr: dict = {}
 
         attr["pypi_updates"] = self.component_api.pypi_updates
@@ -79,6 +102,11 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     # ------------------------------------------------------
     @property
     def unique_id(self) -> str:
+        """Unique id.
+
+        Returns:
+            str: Unique id
+        """
         return self._unique_id
 
     # ------------------------------------------------------

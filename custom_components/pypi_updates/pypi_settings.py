@@ -1,14 +1,15 @@
-""" PyPiSettings """
-from .settings_json import SettingsJson
+"""PyPiSettings."""
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from dataclasses import dataclass
+
+from .settings_json import SettingsJson
 
 
 # ------------------------------------------------------
 # ------------------------------------------------------
 class PypiStatusTypes(Enum):
-    """Pypi item"""
+    """Pypi item."""
 
     OK = 0
     UPDATED = 1
@@ -22,7 +23,7 @@ class PypiStatusTypes(Enum):
 # ------------------------------------------------------
 @dataclass
 class PyPiBaseItem:
-    """Pypi Base item"""
+    """Pypi Base item."""
 
     def __init__(
         self,
@@ -30,6 +31,13 @@ class PyPiBaseItem:
         version: str = "",
         old_version: str = "",
     ) -> None:
+        """Pypi base data.
+
+        Args:
+            package_name (str, optional): _description_. Defaults to "".
+            version (str, optional): _description_. Defaults to "".
+            old_version (str, optional): _description_. Defaults to "".
+        """
         self.package_name: str = package_name
         self.version: str = version
         self.old_version: str = old_version
@@ -39,7 +47,7 @@ class PyPiBaseItem:
 # ------------------------------------------------------
 @dataclass
 class PyPiItem(PyPiBaseItem):
-    """Pypi item"""
+    """Pypi item."""
 
     def __init__(
         self,
@@ -49,6 +57,15 @@ class PyPiItem(PyPiBaseItem):
         last_update: datetime = datetime.now(),
         status: PypiStatusTypes = PypiStatusTypes.OK,
     ) -> None:
+        """Pypi data.
+
+        Args:
+            package_name (str, optional): _description_. Defaults to "".
+            version (str, optional): _description_. Defaults to "".
+            old_version (str, optional): _description_. Defaults to "".
+            last_update (datetime, optional): _description_. Defaults to datetime.now().
+            status (PypiStatusTypes, optional): _description_. Defaults to PypiStatusTypes.OK.
+        """
         super().__init__(package_name, version, old_version)
         self.last_update: datetime = last_update
         self.status: PypiStatusTypes = status
@@ -57,7 +74,10 @@ class PyPiItem(PyPiBaseItem):
 # ------------------------------------------------------
 # ------------------------------------------------------
 class PyPiSettings(SettingsJson):
-    """PyPiSettings"""
+    """PyPiSettings."""
 
     def __init__(self) -> None:
+        """Pypi settings."""
+
+        self.pypi_list: list[PyPiItem] = []
         self.pypi_list: list[PyPiItem] = []

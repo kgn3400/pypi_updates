@@ -1,5 +1,4 @@
-""" ------------------------------------------------------------------
-------------------------------------------------------------------"""
+"""Component api."""
 
 import asyncio
 from dataclasses import dataclass
@@ -20,7 +19,7 @@ from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
 # ------------------------------------------------------------------
 @dataclass
 class ComponentApi:
-    """Pypi updates interface"""
+    """Pypi updates interface."""
 
     def __init__(
         self,
@@ -29,6 +28,14 @@ class ComponentApi:
         hours_between_updates: int,
         clear_updates_after_hours: int,
     ) -> None:
+        """Component api.
+
+        Args:
+            session (ClientSession | None): _description_
+            pypi_list (list[str]): _description_
+            hours_between_updates (int): _description_
+            clear_updates_after_hours (int): _description_
+        """
         self.session: ClientSession | None = session
         self.pypi_list: list[str] = pypi_list
         self.hours_between_updates: int = hours_between_updates
@@ -48,12 +55,12 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def startup(self) -> None:
-        """Pypi startup"""
+        """Pypi startup."""
         await self.sync_lists()
 
     # ------------------------------------------------------------------
     async def sync_lists(self) -> None:
-        """Pypi startup"""
+        """Pypi startup."""
 
         save_settings: bool = False
 
@@ -83,7 +90,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def reset_service(self, call: ServiceCall) -> None:
-        """Pypi reset service"""
+        """Pypi reset service."""
 
         for item in self.settings.pypi_list:
             if item.status == PypiStatusTypes.UPDATED:
@@ -91,17 +98,18 @@ class ComponentApi:
 
         self.settings.write_settings()
         await self.go_update()
+        await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
     async def update_service(self, call: ServiceCall) -> None:
-        """Pypi updates service"""
+        """Pypi updates service."""
 
         await self.go_update(True)
         await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
     async def go_update(self, force_update: bool = False) -> None:
-        """Go updates"""
+        """Go updates."""
 
         if (
             force_update
@@ -116,7 +124,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def update(self) -> None:
-        """Update"""
+        """Update."""
         if self.first_time:
             self.first_time = False
             await self.startup()
@@ -126,7 +134,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def create_markdown(self) -> None:
-        """Create markdown"""
+        """Create markdown."""
         if self.updates:
             tmp_md: str = (
                 "### <font color= dodgerblue>"
@@ -149,7 +157,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def check_update_status(self) -> None:
-        """Check updates status"""
+        """Check updates status."""
         tmp_updates: bool = False
         self.pypi_updates.clear()
 
@@ -174,7 +182,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def check_pypi_for_update(self) -> None:
-        """Check pypi updates"""
+        """Check pypi updates."""
 
         save_settings: bool = False
 
@@ -216,7 +224,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def get_package_version(self, package: str) -> str:
-        """Pypi package version"""
+        """Pypi package version."""
         # https://pypi.org/pypi/pypiserver/json
         # https://pypi.org/project/pypiserver/
 
@@ -237,17 +245,17 @@ class ComponentApi:
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
 class NotFoundException(Exception):
-    """Not found exception"""
+    """Not found exception."""
 
 
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
 class FindPyPiPackage:
-    """Find Pypi package interface"""
+    """Find Pypi package interface."""
 
     # ------------------------------------------------------------------
     async def exist(self, session: ClientSession | None, package: str) -> bool:
-        """Pypi package exist"""
+        """Pypi package exist."""
         close_session: bool = False
         ret_val: bool = True
         json_dict: dict = {}
