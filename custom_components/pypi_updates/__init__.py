@@ -29,6 +29,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
 
     component_api: ComponentApi = ComponentApi(
+        hass,
         session,
         entry.options[CONF_PYPI_LIST],
         entry.options[CONF_HOURS_BETWEEN_CHECK],
@@ -40,7 +41,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         LOGGER,
         name=DOMAIN,
         update_interval=timedelta(minutes=5),
-        update_method=component_api.update,
+        update_method=component_api.async_update,
     )
 
     component_api.coordinator = coordinator
@@ -88,6 +89,6 @@ async def update_listener(
     ]
 
     await hass.config_entries.async_reload(config_entry.entry_id)
-    await component_api.update()
+    await component_api.async_update()
 
     return

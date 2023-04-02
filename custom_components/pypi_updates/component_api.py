@@ -8,10 +8,11 @@ import json
 from aiohttp.client import ClientConnectionError, ClientSession
 import async_timeout
 
-from homeassistant.core import ServiceCall
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import LOGGER
+from .const import DOMAIN, LOGGER
 from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
 
 
@@ -23,19 +24,14 @@ class ComponentApi:
 
     def __init__(
         self,
+        hass: HomeAssistant,
         session: ClientSession | None,
         pypi_list: list[str],
         hours_between_updates: int,
         clear_updates_after_hours: int,
     ) -> None:
-        """Component api.
-
-        Args:
-            session (ClientSession | None): _description_
-            pypi_list (list[str]): _description_
-            hours_between_updates (int): _description_
-            clear_updates_after_hours (int): _description_
-        """
+        """Component api."""
+        self.hass = hass
         self.session: ClientSession | None = session
         self.pypi_list: list[str] = pypi_list
         self.hours_between_updates: int = hours_between_updates
@@ -51,15 +47,15 @@ class ComponentApi:
         self.coordinator: DataUpdateCoordinator
 
         self.settings: PyPiSettings = PyPiSettings()
-        self.settings.read_settings()
+        self.settings.read_settings(hass.config.path(STORAGE_DIR, DOMAIN))
 
     # ------------------------------------------------------------------
-    async def startup(self) -> None:
+    async def async_startup(self) -> None:
         """Pypi startup."""
-        await self.sync_lists()
+        await self.async_sync_lists()
 
     # ------------------------------------------------------------------
-    async def sync_lists(self) -> None:
+    async def async_sync_lists(self) -> None:
         """Pypi startup."""
 
         save_settings: bool = False
@@ -89,7 +85,7 @@ class ComponentApi:
             self.settings.write_settings()
 
     # ------------------------------------------------------------------
-    async def reset_service(self, call: ServiceCall) -> None:
+    async def async_reset_service(self, call: ServiceCall) -> None:
         """Pypi reset service."""
 
         for item in self.settings.pypi_list:
@@ -97,18 +93,18 @@ class ComponentApi:
                 item.status = PypiStatusTypes.OK
 
         self.settings.write_settings()
-        await self.go_update()
+        await self.async_go_update()
         await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
-    async def update_service(self, call: ServiceCall) -> None:
+    async def async_update_service(self, call: ServiceCall) -> None:
         """Pypi updates service."""
 
-        await self.go_update(True)
+        await self.async_go_update(True)
         await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
-    async def go_update(self, force_update: bool = False) -> None:
+    async def async_go_update(self, force_update: bool = False) -> None:
         """Go updates."""
 
         if (
@@ -116,24 +112,24 @@ class ComponentApi:
             or (self.last_full_update + timedelta(hours=self.hours_between_updates))
             < datetime.now()
         ):
-            await self.check_pypi_for_update()
+            await self.async_check_pypi_for_update()
             self.last_full_update = datetime.now()
 
-        await self.check_update_status()
-        await self.create_markdown()
+        await self.async_check_update_status()
+        await self.async_create_markdown()
 
     # ------------------------------------------------------------------
-    async def update(self) -> None:
+    async def async_update(self) -> None:
         """Update."""
         if self.first_time:
             self.first_time = False
-            await self.startup()
-            await self.go_update(True)
+            await self.async_startup()
+            await self.async_go_update(True)
         else:
-            await self.go_update()
+            await self.async_go_update()
 
     # ------------------------------------------------------------------
-    async def create_markdown(self) -> None:
+    async def async_create_markdown(self) -> None:
         """Create markdown."""
         if self.updates:
             tmp_md: str = (
@@ -156,7 +152,7 @@ class ComponentApi:
             )
 
     # ------------------------------------------------------------------
-    async def check_update_status(self) -> None:
+    async def async_check_update_status(self) -> None:
         """Check updates status."""
         tmp_updates: bool = False
         self.pypi_updates.clear()
@@ -181,7 +177,7 @@ class ComponentApi:
         self.updates = tmp_updates
 
     # ------------------------------------------------------------------
-    async def check_pypi_for_update(self) -> None:
+    async def async_check_pypi_for_update(self) -> None:
         """Check pypi updates."""
 
         save_settings: bool = False
@@ -192,7 +188,7 @@ class ComponentApi:
 
         for item in self.settings.pypi_list:
             try:
-                version = await self.get_package_version(item.package_name)
+                version = await self.async_get_package_version(item.package_name)
 
                 #  First check ?
                 if item.version == "":
@@ -223,7 +219,7 @@ class ComponentApi:
             await self.session.close()
 
     # ------------------------------------------------------------------
-    async def get_package_version(self, package: str) -> str:
+    async def async_get_package_version(self, package: str) -> str:
         """Pypi package version."""
         # https://pypi.org/pypi/pypiserver/json
         # https://pypi.org/project/pypiserver/
@@ -254,7 +250,7 @@ class FindPyPiPackage:
     """Find Pypi package interface."""
 
     # ------------------------------------------------------------------
-    async def exist(self, session: ClientSession | None, package: str) -> bool:
+    async def async_exist(self, session: ClientSession | None, package: str) -> bool:
         """Pypi package exist."""
         close_session: bool = False
         ret_val: bool = True

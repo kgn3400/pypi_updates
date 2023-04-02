@@ -41,7 +41,7 @@ async def _validate_input(
 
     if (
         user_input[CONF_PYPI_ITEM].strip() != ""
-        and await FindPyPiPackage().exist(
+        and await FindPyPiPackage().async_exist(
             async_get_clientsession(hass), user_input[CONF_PYPI_ITEM].strip()
         )
         is False

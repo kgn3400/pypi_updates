@@ -79,5 +79,6 @@ class PyPiSettings(SettingsJson):
     def __init__(self) -> None:
         """Pypi settings."""
 
+        super().__init__()
         self.pypi_list: list[PyPiItem] = []
         self.pypi_list: list[PyPiItem] = []

@@ -10,5 +10,5 @@ async def async_setup_services(
 ) -> None:
     """Set up the services for the Pypi updates integration."""
 
-    hass.services.async_register(DOMAIN, "update", component_api.update_service)
-    hass.services.async_register(DOMAIN, "reset", component_api.reset_service)
+    hass.services.async_register(DOMAIN, "update", component_api.async_update_service)
+    hass.services.async_register(DOMAIN, "reset", component_api.async_reset_service)
