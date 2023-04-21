@@ -28,7 +28,7 @@ class ComponentEntity(CoordinatorEntity[DataUpdateCoordinator], Entity):
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, DOMAIN_NAME)},
             manufacturer="KGN",
-            suggested_area="Hjem",
-            sw_version="1.0.2",
+            suggested_area="",
+            sw_version="1.0.5",
             name=DOMAIN_NAME,
         )

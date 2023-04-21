@@ -81,4 +81,3 @@ class PyPiSettings(SettingsJson):
 
         super().__init__()
         self.pypi_list: list[PyPiItem] = []
-        self.pypi_list: list[PyPiItem] = []

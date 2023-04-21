@@ -18,16 +18,16 @@ class SettingsJson:
 
     def __init__(self) -> None:
         """Init."""
-        self._settings_file: str = ""
+        self.settings_file___: str = ""
 
-        self._write_underscore_attributes: bool = False
+        self.write_hidden_attributes___: bool = False
 
     # ------------------------------------------------------------------
     def set_settings_file_name(self, settings_file: str = "") -> None:
         """set_settings_file_name."""
 
         if settings_file == "":
-            self._settings_file = (
+            self.settings_file___ = (
                 path.dirname(__file__)
                 + sep
                 + self._REL_PATH
@@ -35,7 +35,7 @@ class SettingsJson:
                 + self._SETTING_FILENAME
             )
         else:
-            self._settings_file = settings_file
+            self.settings_file___ = settings_file
 
     # ------------------------------------------------------------------
     def read_settings(self, settings_file: str = "") -> None:
@@ -46,7 +46,7 @@ class SettingsJson:
         self.set_settings_file_name(settings_file)
 
         try:
-            with open(self._settings_file, encoding="UTF-8") as settingsfile:
+            with open(self.settings_file___, encoding="UTF-8") as settingsfile:
                 tmp_obj = jsonpickle.decode(settingsfile.read())
 
                 if hasattr(tmp_obj, "__dict__") is False:
@@ -61,36 +61,46 @@ class SettingsJson:
     def __getstate__(self) -> dict:
         """Get state."""
         tmp_dict = self.__dict__.copy()
-        del tmp_dict["_write_underscore_attributes"]
-        del tmp_dict["_settings_file"]
+        del tmp_dict["write_hidden_attributes___"]
+        del tmp_dict["settings_file___"]
 
-        if self._write_underscore_attributes is False:
+        if self.write_hidden_attributes___ is False:
+            try:
 
-            def remove_underscore_attrib(obj) -> None:
-                for key in list(obj):
-                    if hasattr(obj[key], "__dict__"):
-                        tmp = obj[key]
-                        remove_underscore_attrib(tmp.__dict__)
+                def remove_hidden_attrib(obj) -> None:
+                    for key in list(obj):
+                        if len(key) > 2 and key[0:2] == "__":
+                            continue
+                        elif hasattr(obj[key], "__dict__"):
+                            remove_hidden_attrib(obj[key].__dict__)
 
-                    if key[0:1] == "_":
-                        del obj[key]
+                        # Remove hidden attributes
+                        elif len(key) > 3 and key[-3:] == "___":
+                            del obj[key]
 
-            remove_underscore_attrib(tmp_dict)
+                        elif isinstance(obj[key], list):
+                            for item in obj[key]:
+                                if hasattr(item, "__dict__"):
+                                    remove_hidden_attrib(item.__dict__)
+
+                remove_hidden_attrib(tmp_dict)
+            except Exception:  # pylint: disable=broad-except
+                pass
         return tmp_dict
 
     # ------------------------------------------------------------------
     def write_settings(
-        self, unpicklable: bool = True, write_underscore_attributes: bool = False
+        self, unpicklable: bool = True, write_hidden_attributes: bool = False
     ) -> None:
         """Write settings."""
 
-        if path.exists(path.dirname(self._settings_file)) is not True:
-            mkdir(path.dirname(self._settings_file))
+        if path.exists(path.dirname(self.settings_file___)) is not True:
+            mkdir(path.dirname(self.settings_file___))
 
-        self._write_underscore_attributes = write_underscore_attributes
+        self.write_hidden_attributes___ = write_hidden_attributes
         jsonpickle.set_encoder_options("json", ensure_ascii=False)
 
-        with open(self._settings_file, "w", encoding="UTF-8") as settingsfile:
+        with open(self.settings_file___, "w", encoding="UTF-8") as settingsfile:
             settingsfile.write(
                 jsonpickle.encode(self, unpicklable=unpicklable, indent=4)  # type: ignore
             )
@@ -98,7 +108,7 @@ class SettingsJson:
     # ------------------------------------------------------------------
     def delete_settings(self, settings_file: str = "") -> bool:
         """Delete settings."""
-        if self._settings_file == "" or settings_file != "":
+        if self.settings_file___ == "" or settings_file != "":
             self.set_settings_file_name(settings_file)
 
         if path.exists("demofile.txt"):
