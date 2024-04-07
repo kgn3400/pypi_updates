@@ -17,9 +17,9 @@
         "data": {
           "add_more": "Add more",
           "clear_update_after_hours": "Clear updates after",
-          "default_md_header_template": "### <font color= dodgerblue>    <ha-icon icon='mdi:package-variant'></ha-icon></font>  Pypi package updates <br>",
-          "default_md_item_template": "- [{{ package_name }}](https://www.pypi.org/project/{{ package_name }})  updated to version **{{ version }}** from {{ old_version }} <br>",
-          "default_md_no_updates_template": "### <font color= dodgerblue>  <ha-icon icon='mdi:package-variant'></ha-icon></font> Pypi package updates <br> - No updates",
+          "default_md_header_template": "### <font color= dodgerblue>    <ha-icon icon='mdi:package-variant'></ha-icon></font>  Pypi package updates \\r",
+          "default_md_item_template": "- [{{ package_name }}](https://www.pypi.org/project/{{ package_name }})  updated to version **{{ version }}** from {{ old_version }} \\r",
+          "default_md_no_updates_template": "### <font color= dodgerblue>  <ha-icon icon='mdi:package-variant'></ha-icon></font> Pypi package updates \\r - No updates",
           "hours_between_check": "Hours between check for new updates",
           "md_header_template": "Header template for markdown text",
           "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '<br>' for linebreak",
