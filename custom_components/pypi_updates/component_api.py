@@ -1,18 +1,26 @@
 """Component api."""
 
-import asyncio
+from asyncio import timeout
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import json
+from typing import Any
 
 from aiohttp.client import ClientConnectionError, ClientSession
-import async_timeout
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.storage import STORAGE_DIR
+from homeassistant.helpers.template import Template
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import DOMAIN, LOGGER
+from .const import (
+    CONF_MD_HEADER_TEMPLATE,
+    CONF_MD_ITEM_TEMPLATE,
+    CONF_MD_NO_UPDATES_TEMPLATE,
+    DOMAIN,
+    LOGGER,
+)
 from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
 
 
@@ -25,6 +33,7 @@ class ComponentApi:
     def __init__(
         self,
         hass: HomeAssistant,
+        entry: ConfigEntry,
         session: ClientSession | None,
         pypi_list: list[str],
         hours_between_updates: int,
@@ -32,6 +41,7 @@ class ComponentApi:
     ) -> None:
         """Component api."""
         self.hass = hass
+        self.entry: ConfigEntry = entry
         self.session: ClientSession | None = session
         self.pypi_list: list[str] = pypi_list
         self.hours_between_updates: int = hours_between_updates
@@ -40,7 +50,6 @@ class ComponentApi:
         self.close_session: bool = False
         self.first_time: bool = True
         self.updates: bool = False
-        """Any updates in pypi list binary sensor"""
         self.pypi_updates: list[PyPiBaseItem] = []
         self.markdown: str = ""
         self.last_full_update: datetime = datetime.now()
@@ -131,25 +140,65 @@ class ComponentApi:
     # ------------------------------------------------------------------
     async def async_create_markdown(self) -> None:
         """Create markdown."""
+
         if self.updates:
-            tmp_md: str = (
-                "### <font color= dodgerblue>"
-                '  <ha-icon icon="mdi:package-variant"></ha-icon></font>'
-                " Pypi package updates\r"
-            )
-            for item in self.pypi_updates:
-                tmp_md += (
-                    f"- [{item.package_name.capitalize()}]"
-                    f"(https://www.pypi.org/project/{item.package_name})"
-                    f" updated to version **{item.version}** from {item.old_version}\r"
+            tmp_md: str = ""
+            values: dict[str, Any] = {}
+
+            if self.entry.options.get(CONF_MD_HEADER_TEMPLATE, "") != "":
+                value_template: Template | None = Template(
+                    str(self.entry.options.get(CONF_MD_HEADER_TEMPLATE, "")),
+                    self.hass,
                 )
-            self.markdown = tmp_md
+
+                tmp_md = value_template.async_render_with_possible_json_value("")
+
+            for item in self.pypi_updates:
+                value_template: Template | None = Template(
+                    str(self.entry.options.get(CONF_MD_ITEM_TEMPLATE, "")),
+                    self.hass,
+                )
+                values = {
+                    "package_name": item.package_name.capitalize(),
+                    "version": item.version,
+                    "old_version": item.old_version,
+                }
+                tmp_md += value_template.async_render_with_possible_json_value(
+                    item.package_name, variables=values
+                )
+
+            self.markdown = tmp_md.replace("<br>", "\r")
         else:
-            self.markdown = (
-                "### <font color= dodgerblue>"
-                '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
-                "- No updates"
+            value_template: Template | None = Template(
+                str(self.entry.options.get(CONF_MD_NO_UPDATES_TEMPLATE, "")),
+                self.hass,
             )
+
+            self.markdown = value_template.async_render_with_possible_json_value("")
+
+    # ------------------------------------------------------------------
+    # async def async_create_markdown_old(self) -> None:
+    #     """Create markdown."""
+
+    #     if self.updates:
+    #         tmp_md: str = (
+    #             "### <font color= dodgerblue>"
+    #             '  <ha-icon icon="mdi:package-variant"></ha-icon></font>'
+    #             " Pypi package updates\r"
+    #         )
+    #         for item in self.pypi_updates:
+    #             tmp_md += (
+    #                 f"- [{item.package_name.capitalize()}]"
+    #                 f"(https://www.pypi.org/project/{item.package_name})"
+    #                 f" updated to version **{item.version}** from {item.old_version}\r"
+    #             )
+    #         self.markdown = tmp_md
+    #     else:
+    #         self.markdown = (
+    #             "### <font color= dodgerblue>"
+    #             '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
+    #             "- No updates"
+    #         )
 
     # ------------------------------------------------------------------
     async def async_check_update_status(self) -> None:
@@ -204,7 +253,7 @@ class ComponentApi:
                     item.last_update = datetime.now()
                     item.status = PypiStatusTypes.UPDATED
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 item.status = PypiStatusTypes.FETCH_TIMEOUT
             except NotFoundException:
                 item.status = PypiStatusTypes.NOT_FOUND
@@ -226,14 +275,14 @@ class ComponentApi:
 
         json_dict: dict = {}
 
-        async with async_timeout.timeout(5):
+        async with timeout(5):
             response = await self.session.request(  # type: ignore
                 "GET", "https://pypi.org/pypi/" + package + "/json"
             )
             json_dict = json.loads(await response.text())
 
         if "message" in json_dict and json_dict["message"] == "Not Found":
-            raise NotFoundException()
+            raise NotFoundException
 
         return json_dict["info"]["version"]
 
@@ -261,13 +310,13 @@ class FindPyPiPackage:
             close_session = True
 
         try:
-            async with async_timeout.timeout(5):
+            async with timeout(5):
                 response = await session.request(
                     "GET", "https://pypi.org/pypi/" + package + "/json"
                 )
                 json_dict = json.loads(await response.text())
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             ret_val = False
 
         if "message" in json_dict and json_dict["message"] == "Not Found":

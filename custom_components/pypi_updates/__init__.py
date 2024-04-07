@@ -1,4 +1,5 @@
 """The Pypi updates integration."""
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -30,6 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     component_api: ComponentApi = ComponentApi(
         hass,
+        entry,
         session,
         entry.options[CONF_PYPI_LIST],
         entry.options[CONF_HOURS_BETWEEN_CHECK],
@@ -90,5 +92,3 @@ async def update_listener(
 
     await hass.config_entries.async_reload(config_entry.entry_id)
     await component_api.async_update()
-
-    return

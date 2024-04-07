@@ -1,13 +1,13 @@
 # Service ID
 update:
   # Service name as shown in UI
-  name: Update
+  # name: Update
   # Description of the service
-  description: Check for PyPi updates.
+  # description: Check for PyPi updates.
 
 # Service ID
 reset:
   # Service name as shown in UI
-  name: Reset
+  # name: Reset
   # Description of the service
-  description: Reset all PyPi package marked as updated.
+  # description: Reset all PyPi package marked as updated.

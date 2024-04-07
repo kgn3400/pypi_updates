@@ -1,4 +1,5 @@
 """Support for Pypi updates."""
+
 from __future__ import annotations
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
@@ -47,7 +48,9 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
             coordinator (DataUpdateCoordinator): _description_
             entry (ConfigEntry): _description_
             component_api (ComponentApi): _description_
+
         """
+
         super().__init__(coordinator, entry)
 
         self.component_api = component_api
@@ -74,6 +77,7 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         Returns:
             str: Icon name
+
         """
         return "mdi:package-variant"
 
@@ -91,6 +95,7 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         Returns:
             dict: _description_
+
         """
         attr: dict = {}
 
@@ -106,6 +111,7 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         Returns:
             str: Unique id
+
         """
         return self._unique_id
 
@@ -129,6 +135,8 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     # ------------------------------------------------------
     async def async_added_to_hass(self) -> None:
         """When entity is added to hass."""
+
+        await super().async_added_to_hass()
         self.async_on_remove(
             self.coordinator.async_add_listener(self.async_write_ha_state)
         )

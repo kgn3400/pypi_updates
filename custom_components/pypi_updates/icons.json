@@ -1,0 +1,6 @@
+{
+  "services": {
+    "update": "mdi:update",
+    "reset": "mdi:close-circle-outline"
+  }
+}

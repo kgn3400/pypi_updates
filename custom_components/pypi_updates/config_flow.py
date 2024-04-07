@@ -1,11 +1,11 @@
 """Config flow for Pypi updates integration."""
+
 from __future__ import annotations
 
 from typing import Any
 
 import voluptuous as vol
 
-#  from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
@@ -15,19 +15,32 @@ from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
 )
 
 from .component_api import FindPyPiPackage
 from .const import (
     CONF_ADD_MORE,
     CONF_CLEAR_UPDATES_AFTER_HOURS,
+    CONF_DEFAULT_MD_HEADER_TEMPLATE,
+    CONF_DEFAULT_MD_ITEM_TEMPLATE,
+    CONF_DEFAULT_MD_NO_UPDATES_TEMPLATE,
     CONF_HOURS_BETWEEN_CHECK,
+    CONF_LOAD_ONLY,
+    CONF_MD_HEADER_TEMPLATE,
+    CONF_MD_ITEM_TEMPLATE,
+    CONF_MD_NO_UPDATES_TEMPLATE,
     CONF_PYPI_ITEM,
     CONF_PYPI_LIST,
     DOMAIN,
     DOMAIN_NAME,
     LOGGER,
 )
+
+#  from homeassistant import config_entries
+from .translate import Translate
 
 
 # ------------------------------------------------------------------
@@ -39,6 +52,10 @@ async def _validate_input(
     if CONF_PYPI_ITEM not in user_input:
         user_input[CONF_PYPI_ITEM] = ""
 
+    if user_input[CONF_ADD_MORE] is True and user_input[CONF_PYPI_ITEM].strip() == "":
+        errors[CONF_PYPI_ITEM] = "missing_pypi_package"
+        return False
+
     if (
         user_input[CONF_PYPI_ITEM].strip() != ""
         and await FindPyPiPackage().async_exist(
@@ -46,14 +63,15 @@ async def _validate_input(
         )
         is False
     ):
-        errors["base"] = "missing_pypi_package"
+        errors[CONF_PYPI_ITEM] = "missing_pypi_package"
         return False
 
     return True
 
 
 # ------------------------------------------------------------------
-def _create_form(
+async def _create_form(
+    hass: HomeAssistant,
     user_input: dict[str, Any] | None = None,
 ) -> vol.Schema:
     """Create a form for step/option."""
@@ -72,6 +90,39 @@ def _create_form(
                 CONF_PYPI_ITEM,
                 default=user_input.get(CONF_PYPI_ITEM, ""),
             ): str,
+            vol.Optional(
+                CONF_MD_HEADER_TEMPLATE,
+                default=user_input.get(
+                    CONF_MD_HEADER_TEMPLATE,
+                    await Translate(hass).async_get_localized_str(
+                        CONF_DEFAULT_MD_HEADER_TEMPLATE, load_only=CONF_LOAD_ONLY
+                    ),
+                ),
+            ): TextSelector(
+                TextSelectorConfig(multiline=True, type=TextSelectorType.TEXT)
+            ),
+            vol.Optional(
+                CONF_MD_ITEM_TEMPLATE,
+                default=user_input.get(
+                    CONF_MD_ITEM_TEMPLATE,
+                    await Translate(hass).async_get_localized_str(
+                        CONF_DEFAULT_MD_ITEM_TEMPLATE, load_only=CONF_LOAD_ONLY
+                    ),
+                ),
+            ): TextSelector(
+                TextSelectorConfig(multiline=True, type=TextSelectorType.TEXT)
+            ),
+            vol.Optional(
+                CONF_MD_NO_UPDATES_TEMPLATE,
+                default=user_input.get(
+                    CONF_MD_NO_UPDATES_TEMPLATE,
+                    await Translate(hass).async_get_localized_str(
+                        CONF_DEFAULT_MD_NO_UPDATES_TEMPLATE, load_only=CONF_LOAD_ONLY
+                    ),
+                ),
+            ): TextSelector(
+                TextSelectorConfig(multiline=True, type=TextSelectorType.TEXT)
+            ),
             vol.Required(
                 CONF_HOURS_BETWEEN_CHECK,
                 default=user_input.get(CONF_HOURS_BETWEEN_CHECK, 12),
@@ -132,7 +183,7 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     if user_input[CONF_ADD_MORE] is True:
                         return self.async_show_form(
                             step_id="user",
-                            data_schema=_create_form(user_input),
+                            data_schema=await _create_form(self.hass, user_input),
                             errors=errors,
                         )
 
@@ -143,12 +194,10 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             except Exception:  # pylint: disable=broad-except
                 LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
-        # else:
-        #     user_input = {}
 
         return self.async_show_form(
             step_id="user",
-            data_schema=_create_form(user_input),
+            data_schema=await _create_form(self.hass, user_input),
             errors=errors,
         )
 
@@ -176,7 +225,6 @@ class OptionsFlowHandler(OptionsFlow):
         self.config_entry = config_entry
 
         self._selection: dict[str, Any] = {}
-        # self._configs: dict[str, Any] = self.config_entry.data.copy()
         self._options: dict[str, Any] = self.config_entry.options.copy()
 
     # ------------------------------------------------------------------
@@ -199,7 +247,7 @@ class OptionsFlowHandler(OptionsFlow):
                     if user_input[CONF_ADD_MORE] is True:
                         return self.async_show_form(
                             step_id="init",
-                            data_schema=_create_form(user_input),
+                            data_schema=await _create_form(user_input),
                             errors=errors,
                         )
 
@@ -213,6 +261,6 @@ class OptionsFlowHandler(OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=_create_form(user_input),
+            data_schema=await _create_form(self.hass, user_input),
             errors=errors,
         )

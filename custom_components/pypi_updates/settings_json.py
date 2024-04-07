@@ -117,5 +117,5 @@ class SettingsJson:
             except FileNotFoundError:
                 return False
             return True
-        else:
-            return False
+
+        return False
