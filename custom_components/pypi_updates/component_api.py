@@ -174,7 +174,9 @@ class ComponentApi:
                 self.hass,
             )
 
-            self.markdown = value_template.async_render_with_possible_json_value("")
+            self.markdown = str(
+                value_template.async_render_with_possible_json_value("")
+            ).replace("<br>", "\r")
 
     # ------------------------------------------------------------------
     # async def async_create_markdown_old(self) -> None:
