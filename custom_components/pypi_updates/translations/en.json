@@ -22,7 +22,7 @@
           "default_md_no_updates_template": "### <font color= dodgerblue>  <ha-icon icon='mdi:package-variant'></ha-icon></font> Pypi package updates <br> - No updates",
           "hours_between_check": "Hours between check for new updates",
           "md_header_template": "Header template for markdown text",
-          "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '<br>' for linebreak",
+          "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '\u003Cbr\u003E' for linebreak",
           "md_no_updates_template": "No updates template for markdown text",
           "pypi_item": "PyPi package to add",
           "pypi_list": "PyPi packages to check for updates"
@@ -50,7 +50,7 @@
           "clear_update_after_hours": "Clear updates after",
           "hours_between_check": "Hours between check for new updates",
           "md_header_template": "Header template for markdown text",
-          "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '<br>' for linebreak",
+          "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '\u003Cbr\u003E' for linebreak",
           "md_no_updates_template": "No updates template for markdown text",
           "pypi_item": "PyPi package to add",
           "pypi_list": "PyPi packages to check for updates"
