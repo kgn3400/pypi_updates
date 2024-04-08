@@ -28,7 +28,6 @@ from .const import (
     CONF_DEFAULT_MD_ITEM_TEMPLATE,
     CONF_DEFAULT_MD_NO_UPDATES_TEMPLATE,
     CONF_HOURS_BETWEEN_CHECK,
-    CONF_LOAD_ONLY,
     CONF_MD_HEADER_TEMPLATE,
     CONF_MD_ITEM_TEMPLATE,
     CONF_MD_NO_UPDATES_TEMPLATE,
@@ -95,7 +94,7 @@ async def _create_form(
                 default=user_input.get(
                     CONF_MD_HEADER_TEMPLATE,
                     await Translate(hass).async_get_localized_str(
-                        CONF_DEFAULT_MD_HEADER_TEMPLATE, load_only=CONF_LOAD_ONLY
+                        CONF_DEFAULT_MD_HEADER_TEMPLATE, file_name="_defaults.json"
                     ),
                 ),
             ): TextSelector(
@@ -106,7 +105,7 @@ async def _create_form(
                 default=user_input.get(
                     CONF_MD_ITEM_TEMPLATE,
                     await Translate(hass).async_get_localized_str(
-                        CONF_DEFAULT_MD_ITEM_TEMPLATE, load_only=CONF_LOAD_ONLY
+                        CONF_DEFAULT_MD_ITEM_TEMPLATE, file_name="_defaults.json"
                     ),
                 ),
             ): TextSelector(
@@ -117,7 +116,7 @@ async def _create_form(
                 default=user_input.get(
                     CONF_MD_NO_UPDATES_TEMPLATE,
                     await Translate(hass).async_get_localized_str(
-                        CONF_DEFAULT_MD_NO_UPDATES_TEMPLATE, load_only=CONF_LOAD_ONLY
+                        CONF_DEFAULT_MD_NO_UPDATES_TEMPLATE, file_name="_defaults.json"
                     ),
                 ),
             ): TextSelector(

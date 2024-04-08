@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import os
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .component_api import ComponentApi
@@ -133,10 +137,25 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
         await self.coordinator.async_request_refresh()
 
     # ------------------------------------------------------
+    @callback
+    async def _handle_device_registry_updated(
+        self, event: Event[dr.EventDeviceRegistryUpdatedData]
+    ) -> None:
+        """Handle when device registry updated."""
+
+        if event.data["action"] == "remove":
+            if os.path.exists(self.hass.config.path(STORAGE_DIR, DOMAIN)):
+                os.remove(self.hass.config.path(STORAGE_DIR, DOMAIN))
+
+    # ------------------------------------------------------
     async def async_added_to_hass(self) -> None:
         """When entity is added to hass."""
 
         await super().async_added_to_hass()
         self.async_on_remove(
             self.coordinator.async_add_listener(self.async_write_ha_state)
+        )
+        self.hass.bus.async_listen(
+            dr.EVENT_DEVICE_REGISTRY_UPDATED,
+            self._handle_device_registry_updated,
         )

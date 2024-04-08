@@ -25,6 +25,7 @@ class Translate:
         self,
         key: str,
         language: str | None = None,
+        file_name: str = ".json",
         load_only: str = "",
         default: Any = "",
         **kvargs,
@@ -47,7 +48,9 @@ class Translate:
                 if "language" in owner_data and "language" in owner_data["language"]:
                     language = owner_data["language"]["language"]
 
-        self.__check_language_loaded(str(language), load_only)
+        self.__check_language_loaded(
+            str(language), file_name=file_name, load_only=load_only
+        )
 
         if len(kvargs) == 0:
             return Translate.__json_dict.get(key, default)
@@ -55,7 +58,9 @@ class Translate:
         return str(Translate.__json_dict.get(key, default)).format(**kvargs)
 
     # ------------------------------------------------------------------
-    def __check_language_loaded(self, language: str, load_only: str = "") -> None:
+    def __check_language_loaded(
+        self, language: str, file_name: str = ".json", load_only: str = ""
+    ) -> None:
         """Check language."""
 
         # ------------------------------------------------------------------
@@ -79,7 +84,7 @@ class Translate:
             Translate.__language = language
 
             filename = os.path.join(
-                os.path.dirname(__file__), "translations", language + ".json"
+                os.path.dirname(__file__), "translations", language + file_name
             )
 
             if os.path.isfile(filename):
@@ -89,21 +94,8 @@ class Translate:
                 Translate.__json_dict = recursive_flatten("", parsed_json, load_only)
                 return
 
-            # filename = os.path.join(
-            #     os.path.dirname(__file__),
-            #     "translations",
-            #     self.hass.config.language + ".json",
-            # )
-
-            # if os.path.isfile(filename):
-            #     with open(filename) as json_file:
-            #         parsed_json = json.load(json_file)
-
-            #     Translate.__json_dict = recursive_flatten("", parsed_json, only)
-            #     return
-
             filename = os.path.join(
-                os.path.dirname(__file__), "translations", "en.json"
+                os.path.dirname(__file__), "translations", "en" + file_name
             )
 
             if os.path.isfile(filename):

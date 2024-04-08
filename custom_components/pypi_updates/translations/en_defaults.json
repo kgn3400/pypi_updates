@@ -1,71 +1,7 @@
 {
-  "title": "PyPi updates",
-
-  "config": {
-    "abort": {
-      "already_configured": "Device is already configured"
-    },
-    "error": {
-      "empty_pypi_package": "Empty Pypi package to add",
-      "missing_selection": "Nothing selected",
-      "missing_pypi_package": "Pypi package does not exist",
-      "unknown": "Unexpected error"
-    },
-    "step": {
-      "user": {
-        "title": "PyPi updates",
-        "data": {
-          "add_more": "Add more",
-          "clear_update_after_hours": "Clear updates after",
-          "default_md_header_template": "### <font color= dodgerblue><ha-icon icon='mdi:package-variant'></ha-icon></font>  Pypi package updates <br>",
-          "default_md_item_template": "- [{{ package_name }}](https://www.pypi.org/project/{{ package_name }})  updated to version **{{ version }}** from {{ old_version }} <br>",
-          "default_md_no_updates_template": "### <font color= dodgerblue>  <ha-icon icon='mdi:package-variant'></ha-icon></font> Pypi package updates <br> - No updates",
-          "hours_between_check": "Hours between check for new updates",
-          "md_header_template": "Header template for markdown text",
-          "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '\u003Cbr\u003E' for linebreak",
-          "md_no_updates_template": "No updates template for markdown text",
-          "pypi_item": "PyPi package to add",
-          "pypi_list": "PyPi packages to check for updates"
-        }
-      }
-    }
-  },
-
-  "options": {
-    "abort": {
-      "already_configured": "Device is already configured"
-    },
-
-    "error": {
-      "empty_pypi_package": "Empty Pypi package to add",
-      "missing_selection": "Nothing selected",
-      "missing_pypi_package": "Pypi package does not exist",
-      "unknown": "Unexpected error"
-    },
-
-    "step": {
-      "init": {
-        "data": {
-          "add_more": "Add more",
-          "clear_update_after_hours": "Clear updates after",
-          "hours_between_check": "Hours between check for new updates",
-          "md_header_template": "Header template for markdown text",
-          "md_item_template": "Item template for markdown text. Values = package_name, version and old_version. Use '\u003Cbr\u003E' for linebreak",
-          "md_no_updates_template": "No updates template for markdown text",
-          "pypi_item": "PyPi package to add",
-          "pypi_list": "PyPi packages to check for updates"
-        }
-      }
-    }
-  },
-  "services": {
-    "update": {
-      "description": "Check for PyPi updates.",
-      "name": "Check Pypi"
-    },
-    "reset": {
-      "description": "Reset all PyPi packages marked as updated.",
-      "name": "Reset PyPi updates"
-    }
+  "defaults": {
+    "default_md_header_template": "### <font color= dodgerblue>    <ha-icon icon='mdi:package-variant'></ha-icon></font>  Pypi package updates <br>",
+    "default_md_item_template": "- [{{ package_name }}](https://www.pypi.org/project/{{ package_name }})  updated to version **{{ version }}** from {{ old_version }} <br>",
+    "default_md_no_updates_template": "### <font color= dodgerblue>  <ha-icon icon='mdi:package-variant'></ha-icon></font> Pypi package updates <br> - No updates"
   }
 }
