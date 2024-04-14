@@ -13,7 +13,7 @@ from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .component_api import ComponentApi
-from .const import DOMAIN
+from .const import DOMAIN, TRANSLATION_KEY
 from .entity import ComponentEntity
 
 
@@ -60,6 +60,8 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
         self.component_api = component_api
         self.coordinator = coordinator
 
+        self.translation_key = TRANSLATION_KEY
+
         self._name = "Updates"
         self._unique_id = "updates"
 
@@ -75,15 +77,15 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
         return self._name
 
     # ------------------------------------------------------
-    @property
-    def icon(self) -> str:
-        """Icon.
+    # @property
+    # def icon(self) -> str:
+    #     """Icon.
 
-        Returns:
-            str: Icon name
+    #     Returns:
+    #         str: Icon name
 
-        """
-        return "mdi:package-variant"
+    #     """
+    #     return "mdi:package-variant"
 
     # ------------------------------------------------------
     @property
@@ -101,12 +103,10 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
             dict: _description_
 
         """
-        attr: dict = {}
-
-        attr["pypi_updates"] = self.component_api.pypi_updates
-        # attr["pypi_updates"] = [obj.__dict__ for obj in self.component_api.pypi_updates]
-        attr["markdown"] = self.component_api.markdown
-        return attr
+        return {
+            "pypi_updates": self.component_api.pypi_updates,
+            "markdown": self.component_api.markdown,
+        }
 
     # ------------------------------------------------------
     @property

@@ -8,7 +8,8 @@
   "homekit": {},
   "iot_class": "cloud_polling",
   "requirements": ["jsonpickle"],
+  "single_config_entry": true,
   "ssdp": [],
-  "version": "1.0.8",
+  "version": "1.0.9",
   "zeroconf": []
 }

@@ -40,6 +40,7 @@ class ComponentApi:
         clear_updates_after_hours: int,
     ) -> None:
         """Component api."""
+
         self.hass = hass
         self.entry: ConfigEntry = entry
         self.session: ClientSession | None = session
@@ -177,30 +178,6 @@ class ComponentApi:
             self.markdown = str(
                 value_template.async_render_with_possible_json_value("")
             ).replace("<br>", "\r")
-
-    # ------------------------------------------------------------------
-    # async def async_create_markdown_old(self) -> None:
-    #     """Create markdown."""
-
-    #     if self.updates:
-    #         tmp_md: str = (
-    #             "### <font color= dodgerblue>"
-    #             '  <ha-icon icon="mdi:package-variant"></ha-icon></font>'
-    #             " Pypi package updates\r"
-    #         )
-    #         for item in self.pypi_updates:
-    #             tmp_md += (
-    #                 f"- [{item.package_name.capitalize()}]"
-    #                 f"(https://www.pypi.org/project/{item.package_name})"
-    #                 f" updated to version **{item.version}** from {item.old_version}\r"
-    #             )
-    #         self.markdown = tmp_md
-    #     else:
-    #         self.markdown = (
-    #             "### <font color= dodgerblue>"
-    #             '  <ha-icon icon="mdi:package-variant"></ha-icon></font> Pypi package updates\r'
-    #             "- No updates"
-    #         )
 
     # ------------------------------------------------------------------
     async def async_check_update_status(self) -> None:
