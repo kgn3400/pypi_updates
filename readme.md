@@ -20,15 +20,6 @@ Configuration is setup via UI in Home assistant. To add one, go to [Settings > D
 <br/>
 
 
-| Field name | Mandatory/Optional | Description |
-|------------|------------------|-------------|
-| Name | Optional | Name. If empty, entity id name are used  |
-| Entity id | Mandatory | Entity that this sensor tracks  |
-| Attribute | Optional | Attribute of entity that this sensor tracks  |
-| Icon | Mandatory | Icon used by entity  |
-| Clear updates after | Mandatory | User defined time period indicating when to clear the entity  |
-| Text template | Optional | Defines a template to create the text state attribute. Value = new_value, old_value, entity_id, attribute and last_updated |
-
 ## Exposed state attributes
 
 The state updated helper integration provides the following state attributes.
@@ -42,17 +33,12 @@ The state updated helper integration provides the following state attributes.
 
 ## Services
 
-Available services: __reset__ and __reset_all__.
+Available services: __Reset PyPi updates__ and __Check PyPi__.
 
-### Service state_updated.reset
+### Service pypi_updates.reset_pypi_updates
 
-Reset a specific State Updated entity.
+Reset notification about new updates.
 
-|Service data attribute | Optional | Description|
-|-----------------------|----------|------------|
-|entity_id | No | Name of the State updated entity to take reset.|
+### Service pypi_updates.check_pypi
 
-### Service state_updated.reset_all
-
-Reset all State updated entities.
-
+CHeck for new updates.

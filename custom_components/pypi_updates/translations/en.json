@@ -58,7 +58,7 @@
   "services": {
     "update": {
       "description": "Check for PyPi updates.",
-      "name": "Check Pypi"
+      "name": "Check PyPi"
     },
     "reset": {
       "description": "Reset all PyPi packages marked as updated.",
