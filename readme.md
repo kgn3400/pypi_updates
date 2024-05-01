@@ -22,14 +22,16 @@ Configuration is setup via UI in Home assistant. To add one, go to [Settings > D
 
 ## Exposed state attributes
 
-The state updated helper integration provides the following state attributes.
+The PyPi updates integration provides the following state attributes.
 
 | Attribute | Description |
 |-----------|-------------|
-| new_value  | New state/state_attribute value |
-| old_value  | Old state/state_attribute value |
-| text  | Text generated from template |
-| last_updated  | Last time the state/state_attribute was updated |
+| pypi_updates  | List of package which have been updated |
+| Markdown  | Pre formatted markdown text with updated package information and link to package |
+
+Using the markdown card with the content of the markdowb atttribute:
+<img src="https://github.com/kgn3400/pypi_updates/blob/main/images/updates_markdown.png" width="500" height="auto" alt="updates_markdown">
+<br/>
 
 ## Services
 
