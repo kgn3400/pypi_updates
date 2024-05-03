@@ -29,6 +29,7 @@ The PyPi updates integration provides the following state attributes.
 | Markdown      | Pre formatted markdown text with updated package information and link to package |
 
 Using the markdown card with the content of the markdown attribute:
+
 <img src="images/updates_markdown.png" width="500" height="auto" alt="updates_markdown">
 <br/>
 

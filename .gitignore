@@ -2,3 +2,4 @@
 *.pyx
 __pycache__/
 userfiles/
+.vscode
