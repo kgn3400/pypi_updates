@@ -5,6 +5,8 @@ import os
 import os.path
 from typing import Any
 
+import aiofiles
+
 from homeassistant.components.frontend import storage as frontend_store
 from homeassistant.core import HomeAssistant
 
@@ -46,7 +48,7 @@ class Translate:
                 if "language" in owner_data and "language" in owner_data["language"]:
                     language = owner_data["language"]["language"]
 
-        self.__check_language_loaded(
+        await self.__async_check_language_loaded(
             str(language), file_name=file_name, load_only=load_only
         )
 
@@ -56,7 +58,7 @@ class Translate:
         return str(Translate.__json_dict.get(key, default)).format(**kvargs)
 
     # ------------------------------------------------------------------
-    def __check_language_loaded(
+    async def __async_check_language_loaded(
         self, language: str, file_name: str = ".json", load_only: str = ""
     ) -> None:
         """Check language."""
@@ -86,8 +88,8 @@ class Translate:
             )
 
             if os.path.isfile(filename):
-                with open(filename) as json_file:
-                    parsed_json = json.load(json_file)
+                async with aiofiles.open(filename) as json_file:
+                    parsed_json = json.loads(await json_file.read())
 
                 Translate.__json_dict = recursive_flatten("", parsed_json, load_only)
                 return
@@ -97,8 +99,8 @@ class Translate:
             )
 
             if os.path.isfile(filename):
-                with open(filename) as json_file:
-                    parsed_json = json.load(json_file)
+                async with aiofiles.open(filename) as json_file:
+                    parsed_json = json.loads(await json_file.read())
 
                 Translate.__json_dict = recursive_flatten("", parsed_json, load_only)
 
