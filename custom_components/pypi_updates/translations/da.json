@@ -1,6 +1,5 @@
 {
   "title": "PyPi opdateringer",
-
   "config": {
     "abort": {
       "already_configured": "Enhed er allerede konfigureret"
@@ -27,19 +26,16 @@
       }
     }
   },
-
   "options": {
     "abort": {
       "already_configured": "Enhed er allerede konfigureret"
     },
-
     "error": {
       "empty_pypi_package": "Ingen Pypi pakke at tilføje",
       "missing_selection": "Intet valgt",
       "missing_pypi_package": "Pypi pakke findes ikke",
       "unknown": "Uventet fejl"
     },
-
     "step": {
       "init": {
         "data": {

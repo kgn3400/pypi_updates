@@ -57,11 +57,14 @@ class ComponentApi:
         self.coordinator: DataUpdateCoordinator
 
         self.settings: PyPiSettings = PyPiSettings()
-        self.settings.read_settings(hass.config.path(STORAGE_DIR, DOMAIN))
 
     # ------------------------------------------------------------------
     async def async_startup(self) -> None:
         """Pypi startup."""
+        await self.settings.async_read_settings(
+            self.hass.config.path(STORAGE_DIR, DOMAIN)
+        )
+
         await self.async_sync_lists()
 
     # ------------------------------------------------------------------
@@ -92,7 +95,7 @@ class ComponentApi:
 
         if save_settings:
             self.settings.pypi_list.sort(key=sort_key)
-            self.settings.write_settings()
+            await self.settings.async_write_settings()
 
     # ------------------------------------------------------------------
     async def async_reset_service(self, call: ServiceCall) -> None:
@@ -102,7 +105,7 @@ class ComponentApi:
             if item.status == PypiStatusTypes.UPDATED:
                 item.status = PypiStatusTypes.OK
 
-        self.settings.write_settings()
+        await self.settings.async_write_settings()
         await self.async_go_update()
         await self.coordinator.async_refresh()
 
@@ -241,7 +244,7 @@ class ComponentApi:
                 LOGGER.exception("Client connect error")
 
         if save_settings:
-            self.settings.write_settings()
+            await self.settings.async_write_settings()
 
         if self.session and self.close_session:
             await self.session.close()
@@ -255,7 +258,7 @@ class ComponentApi:
         json_dict: dict = {}
 
         async with timeout(5):
-            response = await self.session.request(  # type: ignore
+            response = await self.session.request(
                 "GET", "https://pypi.org/pypi/" + package + "/json"
             )
             json_dict = json.loads(await response.text())

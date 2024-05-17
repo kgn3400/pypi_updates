@@ -1,6 +1,5 @@
 {
   "title": "PyPi updates",
-
   "config": {
     "abort": {
       "already_configured": "Device is already configured"
@@ -27,19 +26,16 @@
       }
     }
   },
-
   "options": {
     "abort": {
       "already_configured": "Device is already configured"
     },
-
     "error": {
       "empty_pypi_package": "Empty Pypi package to add",
       "missing_selection": "Nothing selected",
       "missing_pypi_package": "Pypi package does not exist",
       "unknown": "Unexpected error"
     },
-
     "step": {
       "init": {
         "data": {

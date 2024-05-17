@@ -5,6 +5,7 @@ import os
 import os.path
 from typing import Any
 
+from homeassistant.components.frontend import storage as frontend_store
 from homeassistant.core import HomeAssistant
 
 
@@ -38,9 +39,6 @@ class Translate:
             owner = await self.hass.auth.async_get_owner()
 
             if owner is not None:
-                # pylint: disable-next=import-outside-toplevel
-                from homeassistant.components.frontend import storage as frontend_store
-
                 _, owner_data = await frontend_store.async_user_store(
                     self.hass, owner.id
                 )
