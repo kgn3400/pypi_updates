@@ -28,8 +28,9 @@ class ComponentEntity(CoordinatorEntity[DataUpdateCoordinator], Entity):
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, DOMAIN_NAME)},
+            # translation_key=TRANSLATION_KEY,
             manufacturer="KGN",
             suggested_area="",
-            sw_version="1.0.9",
+            sw_version="1.0.12",
             name=DOMAIN_NAME,
         )

@@ -3,10 +3,10 @@
 from asyncio import timeout
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-import json
 from typing import Any
 
 from aiohttp.client import ClientConnectionError, ClientSession
+import orjson
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -261,7 +261,7 @@ class ComponentApi:
             response = await self.session.request(
                 "GET", "https://pypi.org/pypi/" + package + "/json"
             )
-            json_dict = json.loads(await response.text())
+            json_dict = orjson.loads(await response.text())
 
         if "message" in json_dict and json_dict["message"] == "Not Found":
             raise NotFoundException
@@ -296,7 +296,7 @@ class FindPyPiPackage:
                 response = await session.request(
                     "GET", "https://pypi.org/pypi/" + package + "/json"
                 )
-                json_dict = json.loads(await response.text())
+                json_dict = orjson.loads(await response.text())
 
         except TimeoutError:
             ret_val = False

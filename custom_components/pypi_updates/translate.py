@@ -1,11 +1,11 @@
 """Hmmm."""
 
-import json
 import os
 import os.path
 from typing import Any
 
 import aiofiles
+import orjson
 
 from homeassistant.components.frontend import storage as frontend_store
 from homeassistant.core import HomeAssistant
@@ -19,9 +19,10 @@ class Translate:
     __language: str = ""
     __json_dict: dict[str, Any] = {}
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, load_only: str = "") -> None:
         """Init."""
         self.hass = hass
+        self.load_only: str = load_only
 
     # ------------------------------------------------------------------
     async def async_get_localized_str(
@@ -34,6 +35,9 @@ class Translate:
         **kvargs,
     ) -> str:
         """Get localized string."""
+
+        if load_only == "":
+            load_only = self.load_only
 
         if language is None:
             language = self.hass.config.language
@@ -89,9 +93,9 @@ class Translate:
 
             if os.path.isfile(filename):
                 async with aiofiles.open(filename) as json_file:
-                    parsed_json = json.loads(await json_file.read())
-
-                Translate.__json_dict = recursive_flatten("", parsed_json, load_only)
+                    Translate.__json_dict = recursive_flatten(
+                        "", orjson.loads(await json_file.read()), load_only
+                    )
                 return
 
             filename = os.path.join(
@@ -100,8 +104,8 @@ class Translate:
 
             if os.path.isfile(filename):
                 async with aiofiles.open(filename) as json_file:
-                    parsed_json = json.loads(await json_file.read())
-
-                Translate.__json_dict = recursive_flatten("", parsed_json, load_only)
+                    Translate.__json_dict = recursive_flatten(
+                        "", orjson.loads(await json_file.read()), load_only
+                    )
 
                 return

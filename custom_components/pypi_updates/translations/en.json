@@ -1,5 +1,10 @@
 {
   "title": "PyPi updates",
+  "device": {
+    "pypi_updates": {
+      "name": "PyPi updates"
+    }
+  },
   "config": {
     "abort": {
       "already_configured": "Device is already configured"

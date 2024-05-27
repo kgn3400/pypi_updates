@@ -11,11 +11,12 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/kgn3400/pypi_updates/issues",
   "requirements": [
-    "jsonpickle",
-    "aiofiles"
+    "aiofiles",
+    "orjson",
+    "jsonpickle"
   ],
   "single_config_entry": true,
   "ssdp": [],
-  "version": "1.0.11",
+  "version": "1.0.12",
   "zeroconf": []
 }
