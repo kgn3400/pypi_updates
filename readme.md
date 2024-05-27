@@ -5,7 +5,7 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/kgn3400/pypi_updates/total)
 ![GitHub last commit](https://img.shields.io/github/last-commit/kgn3400/pypi_updates)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/kgn3400/pypi_updates)
-[![Validate% with hassfest](https://github.com/kgn3400/pypi_updates/workflows/Validate%20with%20hassfest/badge.svg)](https://github.com/kgn3400/pypi_updates/blob/main/.github/workflows/hassfest-validate.yaml)
+[![Validate% with hassfest](https://github.com/kgn3400/pypi_updates/workflows/Validate%20with%20hassfest/badge.svg)](https://github.com/kgn3400/pypi_updates/actions/workflows/hassfest-validate.yaml)
 
 The PyPi updates integration allows you to monitor a list of PyPi package and get notified when a updates is available.
 For installation instructions until the State updated helper is part of HACS, [see this guide](https://hacs.xyz/docs/faq/custom_repositories).
