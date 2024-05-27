@@ -9,6 +9,7 @@
   "documentation": "https://github.com/kgn3400/pypi_updates",
   "homekit": {},
   "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/kgn3400/pypi_updates/issues",
   "requirements": [
     "jsonpickle",
     "aiofiles"
