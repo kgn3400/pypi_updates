@@ -10,6 +10,8 @@ import orjson
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import TemplateError
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.template import Template
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -19,7 +21,9 @@ from .const import (
     CONF_MD_ITEM_TEMPLATE,
     CONF_MD_NO_UPDATES_TEMPLATE,
     DOMAIN,
+    DOMAIN_NAME,
     LOGGER,
+    TRANSLATION_KEY_TEMPLATE_ERROR,
 )
 from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
 
@@ -55,6 +59,8 @@ class ComponentApi:
         self.markdown: str = ""
         self.last_full_update: datetime = datetime.now()
         self.coordinator: DataUpdateCoordinator
+        self.last_error_template: str = ""
+        self.last_error_txt_template: str = ""
 
         self.settings: PyPiSettings = PyPiSettings()
 
@@ -145,42 +151,77 @@ class ComponentApi:
     async def async_create_markdown(self) -> None:
         """Create markdown."""
 
-        if self.updates:
-            tmp_md: str = ""
-            values: dict[str, Any] = {}
+        try:
+            if self.updates:
+                tmp_md: str = ""
+                values: dict[str, Any] = {}
 
-            if self.entry.options.get(CONF_MD_HEADER_TEMPLATE, "") != "":
+                if self.entry.options.get(CONF_MD_HEADER_TEMPLATE, "") != "":
+                    value_template: Template | None = Template(
+                        str(self.entry.options.get(CONF_MD_HEADER_TEMPLATE, "")),
+                        self.hass,
+                    )
+
+                    tmp_md = value_template.async_render({})
+
+                for item in self.pypi_updates:
+                    value_template: Template | None = Template(
+                        str(self.entry.options.get(CONF_MD_ITEM_TEMPLATE, "")),
+                        self.hass,
+                    )
+                    values = {
+                        "package_name": item.package_name.capitalize(),
+                        "version": item.version,
+                        "old_version": item.old_version,
+                    }
+                    tmp_md += value_template.async_render(values)
+
+                self.markdown = tmp_md.replace("<br>", "\r")
+            else:
                 value_template: Template | None = Template(
-                    str(self.entry.options.get(CONF_MD_HEADER_TEMPLATE, "")),
+                    str(self.entry.options.get(CONF_MD_NO_UPDATES_TEMPLATE, "")),
                     self.hass,
                 )
 
-                tmp_md = value_template.async_render_with_possible_json_value("")
-
-            for item in self.pypi_updates:
-                value_template: Template | None = Template(
-                    str(self.entry.options.get(CONF_MD_ITEM_TEMPLATE, "")),
-                    self.hass,
-                )
-                values = {
-                    "package_name": item.package_name.capitalize(),
-                    "version": item.version,
-                    "old_version": item.old_version,
-                }
-                tmp_md += value_template.async_render_with_possible_json_value(
-                    item.package_name, variables=values
+                self.markdown = str(value_template.async_render({})).replace(
+                    "<br>", "\r"
                 )
 
-            self.markdown = tmp_md.replace("<br>", "\r")
-        else:
-            value_template: Template | None = Template(
-                str(self.entry.options.get(CONF_MD_NO_UPDATES_TEMPLATE, "")),
-                self.hass,
+        except (TypeError, TemplateError) as e:
+            await self.async_create_issue_template(
+                str(e), value_template.template, TRANSLATION_KEY_TEMPLATE_ERROR
             )
 
-            self.markdown = str(
-                value_template.async_render_with_possible_json_value("")
-            ).replace("<br>", "\r")
+    # ------------------------------------------------------------------
+    async def async_create_issue_template(
+        self,
+        error_txt: str,
+        template: str,
+        translation_key: str,
+    ) -> None:
+        """Create issue on entity."""
+
+        if (
+            self.last_error_template != template
+            or error_txt != self.last_error_txt_template
+        ):
+            LOGGER.warning(error_txt)
+
+            ir.async_create_issue(
+                self.hass,
+                DOMAIN,
+                DOMAIN_NAME + datetime.now().isoformat(),
+                issue_domain=DOMAIN,
+                is_fixable=False,
+                severity=ir.IssueSeverity.WARNING,
+                translation_key=translation_key,
+                translation_placeholders={
+                    "error_txt": error_txt,
+                    "template": template,
+                },
+            )
+            self.last_error_template = template
+            self.last_error_txt_template = error_txt
 
     # ------------------------------------------------------------------
     async def async_check_update_status(self) -> None:

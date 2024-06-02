@@ -7,6 +7,8 @@ DOMAIN_NAME = "PyPi updates"
 LOGGER: Logger = getLogger(__name__)
 
 TRANSLATION_KEY = DOMAIN
+TRANSLATION_KEY_TEMPLATE_ERROR = "template_error"
+
 CONF_PYPI_LIST = "pypi_list"
 CONF_PYPI_ITEM = "pypi_item"
 CONF_HOURS_BETWEEN_CHECK = "hours_between_check"

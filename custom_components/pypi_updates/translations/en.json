@@ -56,6 +56,12 @@
       }
     }
   },
+  "issues": {
+    "template_error": {
+      "description": "Rendering template `{template}` ends in error.\nError: `{error_txt}` \n\n Please fix this problem.",
+      "title": "PyPi updates: Template error"
+    }
+  },
   "services": {
     "update": {
       "description": "Check for PyPi updates.",

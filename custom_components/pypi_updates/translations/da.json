@@ -56,6 +56,12 @@
       }
     }
   },
+  "issues": {
+    "template_error": {
+      "description": "Behandling af skabelon `{template}` fejler.\nFejl: `{error_txt}` \n\n Venligst ret dette problem.",
+      "title": "Pypi opdateringer: Skabelon fejl"
+    }
+  },
   "services": {
     "update": {
       "description": "Check for PyPi opdateringer.",
