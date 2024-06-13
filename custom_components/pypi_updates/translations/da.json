@@ -56,6 +56,20 @@
       }
     }
   },
+  "entity": {
+    "binary_sensor": {
+      "pypi_updates": {
+        "state_attributes": {
+          "pypi_updates": {
+            "name": "PyPi opdateringer"
+          },
+          "markdwon": {
+            "name": "Markdwon"
+          }
+        }
+      }
+    }
+  },
   "issues": {
     "template_error": {
       "description": "Behandling af skabelon `{template}` fejler.\nFejl: `{error_txt}` \n\n Venligst ret dette problem.",

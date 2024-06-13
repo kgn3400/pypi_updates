@@ -56,6 +56,20 @@
       }
     }
   },
+  "entity": {
+    "binary_sensor": {
+      "pypi_updates": {
+        "state_attributes": {
+          "pypi_updates": {
+            "name": "PyPi updates"
+          },
+          "markdwon": {
+            "name": "Markdwon"
+          }
+        }
+      }
+    }
+  },
   "issues": {
     "template_error": {
       "description": "Rendering template `{template}` ends in error.\nError: `{error_txt}` \n\n Please fix this problem.",
