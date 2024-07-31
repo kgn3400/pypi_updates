@@ -104,6 +104,10 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         """
         return {
+            "last_pypi_update_version": self.component_api.last_pypi_update.version,
+            "last_pypi_update_old_version": self.component_api.last_pypi_update.old_version,
+            "last_pypi_update_package_name": self.component_api.last_pypi_update.package_name,
+            "last_pypi_update_package_url": f"https://pypi.org/project/{self.component_api.last_pypi_update.package_name}/",
             "pypi_updates": self.component_api.pypi_updates,
             "markdown": self.component_api.markdown,
         }
@@ -152,6 +156,13 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
         """When entity is added to hass."""
 
         await super().async_added_to_hass()
+
+        self.component_api.entity_id = self.entity_id
+
+        # self.update_method = self.component_api.async_update
+        # self.coordinator.update_interval = timedelta(minutes=5)
+        await self.coordinator.async_config_entry_first_refresh()
+
         self.async_on_remove(
             self.coordinator.async_add_listener(self.async_write_ha_state)
         )

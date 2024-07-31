@@ -63,8 +63,20 @@
           "pypi_updates": {
             "name": "PyPi updates"
           },
-          "markdwon": {
-            "name": "Markdwon"
+          "markdown": {
+            "name": "Markdown"
+          },
+          "last_pypi_update_version": {
+            "name": "Last PyPi update version"
+          },
+          "last_pypi_update_old_version": {
+            "name": "Last PyPi update old version"
+          },
+          "last_pypi_update_package_name": {
+            "name": "Last PyPi update package name"
+          },
+          "last_pypi_update_package_url": {
+            "name": "Last PyPi update package url"
           }
         }
       }

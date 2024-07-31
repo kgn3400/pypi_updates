@@ -9,6 +9,7 @@ from aiohttp.client import ClientConnectionError, ClientSession
 import orjson
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import STATE_OFF
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import issue_registry as ir
@@ -52,10 +53,12 @@ class ComponentApi:
         self.hours_between_updates: int = hours_between_updates
         self.clear_updates_after_hours: int = clear_updates_after_hours
 
+        self.entity_id: str = ""
         self.close_session: bool = False
         self.first_time: bool = True
         self.updates: bool = False
         self.pypi_updates: list[PyPiBaseItem] = []
+        self.last_pypi_update: PyPiBaseItem = PyPiBaseItem()
         self.markdown: str = ""
         self.last_full_update: datetime = datetime.now()
         self.coordinator: DataUpdateCoordinator
@@ -75,7 +78,7 @@ class ComponentApi:
 
     # ------------------------------------------------------------------
     async def async_sync_lists(self) -> None:
-        """Pypi startup."""
+        """Sync lists."""
 
         save_settings: bool = False
 
@@ -244,6 +247,20 @@ class ComponentApi:
                         item.old_version,
                     )
                 )
+
+                self.last_pypi_update = PyPiBaseItem(
+                    item.package_name,
+                    item.version,
+                    item.old_version,
+                )
+
+                #  Does this work ?
+                if self.entity_id:
+                    self.hass.states.async_set(
+                        self.entity_id,
+                        STATE_OFF,
+                        force_update=True,
+                    )
                 tmp_updates = True
 
         self.updates = tmp_updates
@@ -262,7 +279,7 @@ class ComponentApi:
             try:
                 version = await self.async_get_package_version(item.package_name)
 
-                #  First check ?
+                #  First check
                 if item.version == "":
                     save_settings = True
                     item.version = version
