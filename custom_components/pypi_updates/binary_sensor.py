@@ -97,17 +97,15 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     # ------------------------------------------------------
     @property
     def extra_state_attributes(self) -> dict:
-        """Extra state attributes.
+        """Extra state attributes."""
 
-        Returns:
-            dict: _description_
-
-        """
         return {
             "last_pypi_update_version": self.component_api.last_pypi_update.version,
             "last_pypi_update_old_version": self.component_api.last_pypi_update.old_version,
             "last_pypi_update_package_name": self.component_api.last_pypi_update.package_name,
-            "last_pypi_update_package_url": f"https://pypi.org/project/{self.component_api.last_pypi_update.package_name}/",
+            "last_pypi_update_package_url": f"https://pypi.org/project/{self.component_api.last_pypi_update.package_name}/"
+            if self.component_api.last_pypi_update.package_name
+            else "",
             "pypi_updates": self.component_api.pypi_updates,
             "markdown": self.component_api.markdown,
         }

@@ -265,6 +265,9 @@ class ComponentApi:
 
         self.updates = tmp_updates
 
+        if not self.updates:
+            self.last_pypi_update = PyPiBaseItem()
+
     # ------------------------------------------------------------------
     async def async_check_pypi_for_update(self) -> None:
         """Check pypi updates."""
