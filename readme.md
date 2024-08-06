@@ -37,14 +37,14 @@ Using the markdown card with the content of the markdown attribute:
 <img src="https://github.com/kgn3400/pypi_updates/blob/main/images/updates_markdown.png" width="500" height="auto" alt="updates_markdown">
 <br/>
 
-## Services
+## Actions
 
-Available services: __Reset PyPi updates__ and __Check PyPi__.
+Available actions: __Reset PyPi updates__ and __Check PyPi__.
 
-### Service pypi_updates.reset_pypi_updates
+### Action pypi_updates.reset_pypi_updates
 
 Reset notification about new updates.
 
-### Service pypi_updates.check_pypi
+### Action pypi_updates.check_pypi
 
 CHeck for new updates.
