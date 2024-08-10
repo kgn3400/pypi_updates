@@ -67,6 +67,10 @@ class ComponentApi:
 
         self.settings: PyPiSettings = PyPiSettings()
 
+        """Set up the actions for the Pypi updates integration."""
+        hass.services.async_register(DOMAIN, "update", self.async_update_service)
+        hass.services.async_register(DOMAIN, "reset", self.async_reset_service)
+
     # ------------------------------------------------------------------
     async def async_startup(self) -> None:
         """Pypi startup."""
