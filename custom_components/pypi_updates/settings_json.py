@@ -6,7 +6,6 @@ from os import mkdir, path, remove, sep
 import aiofiles
 import jsonpickle
 
-# from homeassistant.helpers.storage import STORAGE_DIR
 #       hass.config.path(STORAGE_DIR, "vicare_token.save"),
 
 
@@ -109,6 +108,11 @@ class SettingsJson:
             await settingsfile.write(
                 jsonpickle.encode(self, unpicklable=unpicklable, indent=4)
             )
+
+    # ------------------------------------------------------------------
+    def get_data(self, unpicklable: bool = True):
+        """Get data."""
+        return jsonpickle.encode(self, unpicklable=unpicklable, indent=4)
 
     # ------------------------------------------------------------------
     def delete_settings(self, settings_file: str = "") -> bool:

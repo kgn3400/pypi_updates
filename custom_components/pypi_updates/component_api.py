@@ -13,7 +13,6 @@ from homeassistant.const import STATE_OFF
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.template import Template
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -65,7 +64,7 @@ class ComponentApi:
         self.last_error_template: str = ""
         self.last_error_txt_template: str = ""
 
-        self.settings: PyPiSettings = PyPiSettings()
+        self.settings: PyPiSettings = PyPiSettings(hass)
 
         """Set up the actions for the Pypi updates integration."""
         hass.services.async_register(DOMAIN, "update", self.async_update_service)
@@ -74,9 +73,7 @@ class ComponentApi:
     # ------------------------------------------------------------------
     async def async_startup(self) -> None:
         """Pypi startup."""
-        await self.settings.async_read_settings(
-            self.hass.config.path(STORAGE_DIR, DOMAIN)
-        )
+        await self.settings.async_read_settings()
 
         await self.async_sync_lists()
 
