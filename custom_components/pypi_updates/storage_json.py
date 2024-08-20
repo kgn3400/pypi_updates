@@ -1,25 +1,56 @@
 """Settings handling."""
 
-# import aiofiles
+from collections.abc import Callable
+from typing import Any
+
 import jsonpickle
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.storage import Store
 
 from .const import STORAGE_KEY, STORAGE_VERSION
-from .store_settings import StoreSettings
 
 
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
-class SettingsJson:
+class StoreMigrate(Store):
+    """When migration storage layout."""
+
+    custom_migrate_func: Callable[[int, int, Any], Any] | None = None
+
+    # ------------------------------------------------------------------
+    async def _async_migrate_func(
+        self,
+        old_major_version: int,
+        old_minor_version: int,
+        old_data: Any,
+    ) -> Any:
+        """Migrate to the new version."""
+
+        if self.custom_migrate_func is not None:
+            return await self.custom_migrate_func(
+                old_major_version, old_minor_version, old_data
+            )
+
+        return old_data
+
+
+# ------------------------------------------------------------------
+# ------------------------------------------------------------------
+class StorageJson:
     """Settings class."""
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        async_migrate_func: Callable[[int, int, Any], Any] | None = None,
+    ) -> None:
         """Init."""
 
         self.write_hidden_attributes___: bool = False
         self.hass___ = hass
-        self.store___ = StoreSettings(self.hass___, STORAGE_VERSION, STORAGE_KEY)
+        self.store___ = StoreMigrate(self.hass___, STORAGE_VERSION, STORAGE_KEY)
+        self.store___.custom_migrate_func = async_migrate_func
 
     # ------------------------------------------------------------------
     async def async_read_settings(self) -> None:
@@ -31,12 +62,37 @@ class SettingsJson:
 
         if data is None:
             return
-        tmp_obj = jsonpickle.decode(data)
+        tmp_obj = self.decode_data(data)
 
         if hasattr(tmp_obj, "__dict__") is False:
             return
 
         self.__dict__.update(tmp_obj.__dict__)
+
+    # ------------------------------------------------------------------
+    def decode_data(self, data: Any):
+        """Decode data."""
+        return jsonpickle.decode(data)
+
+    # ------------------------------------------------------------------
+    async def async_write_settings(
+        self,
+    ) -> None:
+        """Write settings."""
+
+        jsonpickle.set_encoder_options("json", ensure_ascii=False)
+
+        await self.store___.async_save(self.encode_data(self))
+
+    # ------------------------------------------------------------------
+    def encode_data(self, data: Any):
+        """Encode data."""
+        return jsonpickle.encode(data, unpicklable=True)
+
+    # ------------------------------------------------------------------
+    async def async_remove_settings(self) -> None:
+        """Remove settings."""
+        await self.store___.async_remove()
 
     # ------------------------------------------------------------------
     def __getstate__(self) -> dict:
@@ -69,21 +125,3 @@ class SettingsJson:
             except Exception:  # noqa: BLE001
                 pass
         return tmp_dict
-
-    # ------------------------------------------------------------------
-    async def async_write_settings(
-        self,
-        unpicklable: bool = True,
-        write_hidden_attributes: bool = False,
-    ) -> None:
-        """Write settings."""
-
-        self.write_hidden_attributes___ = write_hidden_attributes
-        jsonpickle.set_encoder_options("json", ensure_ascii=False)
-
-        await self.store___.async_save(jsonpickle.encode(self, unpicklable=unpicklable))
-
-    # ------------------------------------------------------------------
-    async def async_remove_settings(self) -> None:
-        """Remove settings."""
-        await self.store___.async_remove()

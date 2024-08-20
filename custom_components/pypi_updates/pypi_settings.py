@@ -6,7 +6,7 @@ from enum import Enum
 
 from homeassistant.core import HomeAssistant
 
-from .storage_json import SettingsJson
+from .storage_json import StorageJson
 
 
 # ------------------------------------------------------
@@ -79,7 +79,7 @@ class PyPiItem(PyPiBaseItem):
 
 # ------------------------------------------------------
 # ------------------------------------------------------
-class PyPiSettings(SettingsJson):
+class PyPiSettings(StorageJson):
     """PyPiSettings."""
 
     def __init__(self, hass: HomeAssistant) -> None:
