@@ -57,9 +57,9 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         super().__init__(coordinator, entry)
 
-        # self.component_api = component_api
         self.component_api = ComponentApi(
             hass,
+            coordinator,
             entry,
             async_get_clientsession(hass),
             entry.options[CONF_PYPI_LIST],
@@ -69,7 +69,6 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         self.coordinator.update_method = self.component_api.async_update
         self.coordinator.update_interval = timedelta(minutes=10)
-        # self.coordinator = coordinator
 
         self.translation_key = TRANSLATION_KEY
 

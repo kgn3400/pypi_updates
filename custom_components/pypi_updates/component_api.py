@@ -37,6 +37,7 @@ class ComponentApi:
     def __init__(
         self,
         hass: HomeAssistant,
+        coordinator: DataUpdateCoordinator,
         entry: ConfigEntry,
         session: ClientSession | None,
         pypi_list: list[str],
@@ -46,6 +47,7 @@ class ComponentApi:
         """Component api."""
 
         self.hass = hass
+        self.coordinator: DataUpdateCoordinator = coordinator
         self.entry: ConfigEntry = entry
         self.session: ClientSession | None = session
         self.pypi_list: list[str] = pypi_list
@@ -60,7 +62,6 @@ class ComponentApi:
         self.last_pypi_update: PyPiBaseItem = PyPiBaseItem()
         self.markdown: str = ""
         self.last_full_update: datetime = datetime.now()
-        self.coordinator: DataUpdateCoordinator
         self.last_error_template: str = ""
         self.last_error_txt_template: str = ""
 
