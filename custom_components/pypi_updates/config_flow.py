@@ -27,7 +27,6 @@ from homeassistant.helpers.selector import (
 
 from .component_api import FindPyPiPackage
 from .const import (
-    CONF_ADD_MORE,
     CONF_CLEAR_UPDATES_AFTER_HOURS,
     CONF_DEFAULT_MD_HEADER_TEMPLATE,
     CONF_DEFAULT_MD_ITEM_TEMPLATE,
@@ -43,6 +42,8 @@ from .const import (
 )
 from .translate import Translate
 
+tmp_item_list: list[str] = []
+
 
 # ------------------------------------------------------------------
 async def _validate_input(
@@ -52,9 +53,7 @@ async def _validate_input(
 
     if CONF_PYPI_ITEM not in user_input:
         user_input[CONF_PYPI_ITEM] = ""
-
-    if user_input[CONF_ADD_MORE] and user_input[CONF_PYPI_ITEM].strip() == "":
-        raise SchemaFlowError("missing_pypi_package")
+        return user_input
 
     if (
         user_input[CONF_PYPI_ITEM].strip() != ""
@@ -66,10 +65,9 @@ async def _validate_input(
     ):
         raise SchemaFlowError("missing_pypi_package")
 
-    if user_input[CONF_ADD_MORE]:
-        user_input[CONF_PYPI_LIST].append(user_input.get(CONF_PYPI_ITEM))
-        user_input[CONF_PYPI_LIST].sort()
-        user_input[CONF_PYPI_ITEM] = ""
+    # if user_input[CONF_PYPI_ITEM].strip() != "":
+    user_input[CONF_PYPI_LIST].append(user_input.get(CONF_PYPI_ITEM))
+    user_input[CONF_PYPI_LIST].sort()
 
     return user_input
 
@@ -77,16 +75,22 @@ async def _validate_input(
 # ------------------------------------------------------------------
 async def choose_config_step(options: dict[str, Any]) -> str | None:
     """Return next step_id for config flow."""
-    if options[CONF_ADD_MORE] is True:
+
+    if options[CONF_PYPI_ITEM].strip() != "":
+        options[CONF_PYPI_ITEM] = ""
         return "user"
+
     return None
 
 
 # ------------------------------------------------------------------
 async def choose_options_step(options: dict[str, Any]) -> str | None:
     """Return next step_id for options flow."""
-    if options[CONF_ADD_MORE] is True:
+
+    if options[CONF_PYPI_ITEM].strip() != "":
+        options[CONF_PYPI_ITEM] = ""
         return "init"
+
     return None
 
 
@@ -158,10 +162,6 @@ async def create_schema(handler: SchemaCommonFlowHandler) -> vol.Schema:
                     unit_of_measurement="hours",
                 )
             ),
-            vol.Required(
-                CONF_ADD_MORE,
-                default=True,
-            ): cv.boolean,
         }
     )
 
@@ -204,7 +204,7 @@ class ConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
         The options parameter contains config entry options, which is the union of user
         input from the config flow steps.
         """
-        del options[CONF_ADD_MORE]
+        # del options[CONF_ADD_MORE]
 
     @callback
     @staticmethod
@@ -216,4 +216,4 @@ class ConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
         The options parameter contains config entry options, which is the union of
         stored options and user input from the options flow steps.
         """
-        del options[CONF_ADD_MORE]
+        # del options[CONF_ADD_MORE]
