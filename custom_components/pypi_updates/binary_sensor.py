@@ -88,18 +88,6 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
         """
         return self._name
 
-    # ------------------------------------------------------
-    # @property
-    # def icon(self) -> str:
-    #     """Icon.
-
-    #     Returns:
-    #         str: Icon name
-
-    #     """
-    #     return "mdi:package-variant"
-
-    # ------------------------------------------------------
     @property
     def is_on(self) -> bool:
         """Get the state."""

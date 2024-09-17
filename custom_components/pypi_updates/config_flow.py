@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, cast
 
+from aiohttp import ClientConnectionError
 import voluptuous as vol
 
 from homeassistant.core import HomeAssistant, callback
@@ -25,7 +26,7 @@ from homeassistant.helpers.selector import (
     TextSelectorType,
 )
 
-from .component_api import FindPyPiPackage
+from .component_api import FindPyPiPackage, NotFoundException
 from .const import (
     CONF_CLEAR_UPDATES_AFTER_HOURS,
     CONF_DEFAULT_MD_HEADER_TEMPLATE,
@@ -55,17 +56,19 @@ async def _validate_input(
         user_input[CONF_PYPI_ITEM] = ""
         return user_input
 
-    if (
-        user_input[CONF_PYPI_ITEM].strip() != ""
-        and await FindPyPiPackage().async_exist(
-            async_get_clientsession(handler.parent_handler.hass),
-            user_input[CONF_PYPI_ITEM].strip(),
-        )
-        is False
-    ):
-        raise SchemaFlowError("missing_pypi_package")
+    try:
+        if (
+            user_input[CONF_PYPI_ITEM].strip() != ""
+            and await FindPyPiPackage().async_get_package_version(
+                async_get_clientsession(handler.parent_handler.hass),
+                user_input[CONF_PYPI_ITEM].strip(),
+            )
+            == ""
+        ):
+            raise SchemaFlowError("missing_pypi_package")
+    except (TimeoutError, NotFoundException, ClientConnectionError):
+        raise SchemaFlowError("missing_pypi_package") from None
 
-    # if user_input[CONF_PYPI_ITEM].strip() != "":
     user_input[CONF_PYPI_LIST].append(user_input.get(CONF_PYPI_ITEM))
     user_input[CONF_PYPI_LIST].sort()
 

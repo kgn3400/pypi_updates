@@ -72,13 +72,6 @@ class ComponentApi:
         hass.services.async_register(DOMAIN, "reset", self.async_reset_service)
 
     # ------------------------------------------------------------------
-    # async def async_startup(self) -> None:
-    #     """Pypi startup."""
-    #     await self.settings.async_read_settings()
-
-    #     await self.async_sync_lists()
-
-    # ------------------------------------------------------------------
     async def async_sync_lists(self) -> None:
         """Sync lists."""
 
@@ -284,9 +277,13 @@ class ComponentApi:
             self.session = ClientSession()
             self.close_session = True
 
+        find_pypi_package: FindPyPiPackage = FindPyPiPackage()
+
         for item in self.settings.pypi_list:
             try:
-                version = await self.async_get_package_version(item.package_name)
+                version = await find_pypi_package.async_get_package_version(
+                    self.session, item.package_name
+                )
 
                 #  First check
                 if item.version == "":
@@ -316,25 +313,6 @@ class ComponentApi:
         if self.session and self.close_session:
             await self.session.close()
 
-    # ------------------------------------------------------------------
-    async def async_get_package_version(self, package: str) -> str:
-        """Pypi package version."""
-        # https://pypi.org/pypi/pypiserver/json
-        # https://pypi.org/project/pypiserver/
-
-        json_dict: dict = {}
-
-        async with timeout(5):
-            response = await self.session.request(
-                "GET", "https://pypi.org/pypi/" + package + "/json"
-            )
-            json_dict = orjson.loads(await response.text())
-
-        if "message" in json_dict and json_dict["message"] == "Not Found":
-            raise NotFoundException
-
-        return json_dict["info"]["version"]
-
 
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
@@ -348,33 +326,32 @@ class FindPyPiPackage:
     """Find Pypi package interface."""
 
     # ------------------------------------------------------------------
-    async def async_exist(self, session: ClientSession | None, package: str) -> bool:
+    async def async_get_package_version(
+        self, session: ClientSession | None, package: str
+    ) -> str:
         """Pypi package exist."""
         close_session: bool = False
-        ret_val: bool = True
-        json_dict: dict = {}
 
         if session is None:
             session = ClientSession()
             close_session = True
 
-        try:
-            async with timeout(5):
-                response = await session.request(
-                    "GET", "https://pypi.org/pypi/" + package + "/json"
-                )
-                json_dict = orjson.loads(await response.text())
-
-        except TimeoutError:
-            ret_val = False
-
-        if "message" in json_dict and json_dict["message"] == "Not Found":
-            ret_val = False
+        """Pypi package version."""
         # https://pypi.org/pypi/pypiserver/json
         # https://pypi.org/project/pypiserver/
-        # return json_dict["info"]["version"]
+
+        json_dict: dict = {}
+
+        async with timeout(5):
+            response = await session.request(
+                "GET", "https://pypi.org/pypi/" + package + "/json"
+            )
+            json_dict = orjson.loads(await response.text())
+
+        if "message" in json_dict and json_dict["message"] == "Not Found":
+            raise NotFoundException
 
         if session and close_session:
             await session.close()
 
-        return ret_val
+        return json_dict["info"]["version"]
