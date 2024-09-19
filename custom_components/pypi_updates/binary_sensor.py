@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 
+from custom_components.pypi_updates.pypi_settings import PyPiBaseItem, PypiStatusTypes
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Event, HomeAssistant, callback
@@ -98,7 +99,6 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         """Extra state attributes."""
-
         return {
             "last_pypi_update_version": self.component_api.last_pypi_update.version,
             "last_pypi_update_old_version": self.component_api.last_pypi_update.old_version,
@@ -106,7 +106,11 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
             "last_pypi_update_package_url": f"https://pypi.org/project/{self.component_api.last_pypi_update.package_name}/"
             if self.component_api.last_pypi_update.package_name
             else "",
-            "pypi_updates": self.component_api.pypi_updates,
+            "pypi_updates": [
+                PyPiBaseItem(x.package_name, x.version, x.old_version)
+                for x in self.component_api.settings.pypi_list
+                if x.status == PypiStatusTypes.UPDATED
+            ],
             "markdown": self.component_api.markdown,
         }
 

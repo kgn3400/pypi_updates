@@ -9,7 +9,8 @@ from aiohttp.client import ClientConnectionError, ClientSession
 import orjson
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_OFF
+
+# from homeassistant.const import STATE_OFF
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import issue_registry as ir
@@ -40,7 +41,7 @@ class ComponentApi:
         coordinator: DataUpdateCoordinator,
         entry: ConfigEntry,
         session: ClientSession | None,
-        pypi_list: list[str],
+        entry_pypi_list: list[str],
         hours_between_updates: int,
         clear_updates_after_hours: int,
     ) -> None:
@@ -50,15 +51,14 @@ class ComponentApi:
         self.coordinator: DataUpdateCoordinator = coordinator
         self.entry: ConfigEntry = entry
         self.session: ClientSession | None = session
-        self.pypi_list: list[str] = pypi_list
+        self.entry_pypi_list: list[str] = entry_pypi_list
         self.hours_between_updates: int = hours_between_updates
         self.clear_updates_after_hours: int = clear_updates_after_hours
 
         self.entity_id: str = ""
         self.close_session: bool = False
-        self.first_time: bool = True
         self.updates: bool = False
-        self.pypi_updates: list[PyPiBaseItem] = []
+        # self.pypi_updates: list[PyPiBaseItem] = []
         self.last_pypi_update: PyPiBaseItem = PyPiBaseItem()
         self.markdown: str = ""
         self.last_full_update: datetime = datetime.now()
@@ -82,14 +82,14 @@ class ComponentApi:
 
         # Delete part
         for index, item in reversed(list(enumerate(self.settings.pypi_list))):
-            if item.package_name not in self.pypi_list:
+            if item.package_name not in self.entry_pypi_list:
                 save_settings = True
                 del self.settings.pypi_list[index]
 
         # Add new items
         cur_package: list = [itemx.package_name for itemx in self.settings.pypi_list]
 
-        for itemy in self.pypi_list:
+        for itemy in self.entry_pypi_list:
             if itemy not in cur_package:
                 save_settings = True
 
@@ -110,7 +110,10 @@ class ComponentApi:
                 item.status = PypiStatusTypes.OK
 
         await self.settings.async_write_settings()
-        await self.async_go_update()
+        self.updates = False
+        self.last_pypi_update = PyPiBaseItem()
+
+        await self.async_create_markdown()
         await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
@@ -121,6 +124,22 @@ class ComponentApi:
         await self.coordinator.async_refresh()
 
     # ------------------------------------------------------------------
+    async def async_setup(self) -> None:
+        """Set up the Pypi updates component."""
+
+        await self.settings.async_read_settings()
+
+        await self.async_sync_lists()
+        self.check_list_for_updates()
+        await self.async_create_markdown()
+
+    # ------------------------------------------------------------------
+    async def async_update(self) -> None:
+        """Update."""
+
+        await self.async_go_update()
+
+    # ------------------------------------------------------------------
     async def async_go_update(self, force_update: bool = False) -> None:
         """Go updates."""
 
@@ -129,25 +148,10 @@ class ComponentApi:
             or (self.last_full_update + timedelta(hours=self.hours_between_updates))
             < datetime.now()
         ):
-            await self.async_check_pypi_for_update()
+            if await self.async_check_pypi_for_update():
+                await self.async_create_markdown()
+
             self.last_full_update = datetime.now()
-
-        await self.async_check_update_status()
-        await self.async_create_markdown()
-
-    # ------------------------------------------------------------------
-    async def async_setup(self) -> None:
-        """Set up the Pypi updates component."""
-
-        await self.settings.async_read_settings()
-
-        await self.async_sync_lists()
-
-    # ------------------------------------------------------------------
-    async def async_update(self) -> None:
-        """Update."""
-
-        await self.async_go_update()
 
     # ------------------------------------------------------------------
     async def async_create_markdown(self) -> None:
@@ -166,19 +170,20 @@ class ComponentApi:
 
                     tmp_md = value_template.async_render({})
 
-                for item in self.pypi_updates:
-                    value_template: Template | None = Template(
-                        str(self.entry.options.get(CONF_MD_ITEM_TEMPLATE, "")),
-                        self.hass,
-                    )
-                    values = {
-                        "package_name": item.package_name.capitalize(),
-                        "version": item.version,
-                        "old_version": item.old_version,
-                    }
-                    tmp_md += value_template.async_render(values)
+                for item in self.settings.pypi_list:
+                    if item.status == PypiStatusTypes.UPDATED:
+                        value_template: Template | None = Template(
+                            str(self.entry.options.get(CONF_MD_ITEM_TEMPLATE, "")),
+                            self.hass,
+                        )
+                        values = {
+                            "package_name": item.package_name.capitalize(),
+                            "version": item.version,
+                            "old_version": item.old_version,
+                        }
+                        tmp_md += value_template.async_render(values)
 
-                self.markdown = tmp_md.replace("<br>", "\r")
+                    self.markdown = tmp_md.replace("<br>", "\r")
             else:
                 value_template: Template | None = Template(
                     str(self.entry.options.get(CONF_MD_NO_UPDATES_TEMPLATE, "")),
@@ -226,52 +231,11 @@ class ComponentApi:
             self.last_error_txt_template = error_txt
 
     # ------------------------------------------------------------------
-    async def async_check_update_status(self) -> None:
-        """Check updates status."""
-        tmp_updates: bool = False
-        self.pypi_updates.clear()
-
-        for item in self.settings.pypi_list:
-            if (
-                item.status == PypiStatusTypes.UPDATED
-                and (item.last_update + timedelta(hours=self.clear_updates_after_hours))
-                < datetime.now()
-            ):
-                item.status = PypiStatusTypes.OK
-            elif item.status == PypiStatusTypes.UPDATED:
-                self.pypi_updates.append(
-                    PyPiBaseItem(
-                        item.package_name,
-                        item.version,
-                        item.old_version,
-                    )
-                )
-
-                self.last_pypi_update = PyPiBaseItem(
-                    item.package_name,
-                    item.version,
-                    item.old_version,
-                )
-
-                #  Does this work ?
-                if self.entity_id:
-                    self.hass.states.async_set(
-                        self.entity_id,
-                        STATE_OFF,
-                        force_update=True,
-                    )
-                tmp_updates = True
-
-        self.updates = tmp_updates
-
-        if not self.updates:
-            self.last_pypi_update = PyPiBaseItem()
-
-    # ------------------------------------------------------------------
-    async def async_check_pypi_for_update(self) -> None:
+    async def async_check_pypi_for_update(self) -> bool:
         """Check pypi updates."""
 
         save_settings: bool = False
+        self.last_pypi_update = PyPiBaseItem()
 
         if self.session is None:
             self.session = ClientSession()
@@ -299,6 +263,23 @@ class ComponentApi:
                     item.last_update = datetime.now()
                     item.status = PypiStatusTypes.UPDATED
 
+                    self.last_pypi_update = PyPiBaseItem(
+                        item.package_name,
+                        item.version,
+                        item.old_version,
+                    )
+
+                elif (
+                    item.status == PypiStatusTypes.UPDATED
+                    and (
+                        item.last_update
+                        + timedelta(hours=self.clear_updates_after_hours)
+                    )
+                    < datetime.now()
+                ):
+                    save_settings = True
+                    item.status = PypiStatusTypes.OK
+
             except TimeoutError:
                 item.status = PypiStatusTypes.FETCH_TIMEOUT
             except NotFoundException:
@@ -307,11 +288,28 @@ class ComponentApi:
                 item.status = PypiStatusTypes.CONNECT_ERROR
                 LOGGER.exception("Client connect error")
 
+        self.check_list_for_updates()
+
         if save_settings:
             await self.settings.async_write_settings()
 
         if self.session and self.close_session:
             await self.session.close()
+
+        return save_settings
+
+    # ------------------------------------------------------------------
+    def check_list_for_updates(self) -> bool:
+        """Check list for updates."""
+
+        for item in self.settings.pypi_list:
+            if item.status == PypiStatusTypes.UPDATED:
+                self.updates = True
+                return True
+
+        self.updates = False
+
+        return False
 
 
 # ------------------------------------------------------------------

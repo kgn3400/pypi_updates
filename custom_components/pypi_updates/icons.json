@@ -6,9 +6,12 @@
       }
     }
   },
-
   "services": {
-    "update": "mdi:update",
-    "reset": "mdi:close-circle-outline"
+    "update": {
+      "service": "mdi:update"
+    },
+    "reset": {
+      "service": "mdi:close-circle-outline"
+    }
   }
 }
