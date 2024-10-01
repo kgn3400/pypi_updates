@@ -341,9 +341,7 @@ class FindPyPiPackage:
         json_dict: dict = {}
 
         async with timeout(5):
-            response = await session.request(
-                "GET", "https://pypi.org/pypi/" + package + "/json"
-            )
+            response = await session.get("https://pypi.org/pypi/" + package + "/json")
             json_dict = orjson.loads(await response.text())
 
         if "message" in json_dict and json_dict["message"] == "Not Found":

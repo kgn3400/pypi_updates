@@ -73,8 +73,8 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         self.translation_key = TRANSLATION_KEY
 
-        self._name = "Updates"
-        self._unique_id = "updates"
+        self._name = "Pypi updates"
+        self._unique_id = "pypi_updates"
 
         self.coordinator.setup_method = self.component_api.async_setup
 
