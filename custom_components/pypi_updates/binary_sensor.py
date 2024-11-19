@@ -6,37 +6,27 @@ from datetime import timedelta
 
 from custom_components.pypi_updates.pypi_settings import PyPiBaseItem, PypiStatusTypes
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
+from . import CommonConfigEntry
 from .component_api import ComponentApi
-from .const import (
-    CONF_CLEAR_UPDATES_AFTER_HOURS,
-    CONF_HOURS_BETWEEN_CHECK,
-    CONF_PYPI_LIST,
-    DOMAIN,
-    TRANSLATION_KEY,
-)
+from .const import TRANSLATION_KEY
 from .entity import ComponentEntity
 
 
 # ------------------------------------------------------
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: CommonConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Entry for Pypi updates setup."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    # component_api: ComponentApi = hass.data[DOMAIN][entry.entry_id]["component_api"]
 
     sensors = []
 
-    sensors.append(PypiUpdatesBinarySensor(hass, coordinator, entry))
+    sensors.append(PypiUpdatesBinarySensor(hass, entry))
 
     async_add_entities(sensors)
 
@@ -50,23 +40,13 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
     def __init__(
         self,
         hass: HomeAssistant,
-        coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
-        # component_api: ComponentApi,
+        entry: CommonConfigEntry,
     ) -> None:
         """Binary sensor."""
 
-        super().__init__(coordinator, entry)
+        super().__init__(entry.runtime_data.coordinator, entry)
 
-        self.component_api = ComponentApi(
-            hass,
-            coordinator,
-            entry,
-            async_get_clientsession(hass),
-            entry.options[CONF_PYPI_LIST],
-            entry.options[CONF_HOURS_BETWEEN_CHECK],
-            entry.options[CONF_CLEAR_UPDATES_AFTER_HOURS],
-        )
+        self.component_api: ComponentApi = entry.runtime_data.component_api
 
         self.coordinator.update_method = self.component_api.async_update
         self.coordinator.update_interval = timedelta(minutes=10)
