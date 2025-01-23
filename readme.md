@@ -19,7 +19,7 @@ Or click
 Configuration is setup via UI in Home assistant. To add one, go to [Settings > Devices & Services](https://my.home-assistant.io/redirect/integrations) and click the add button. Next choose the [PyPi updates](https://my.home-assistant.io/redirect/config_flow_start?domain=pypi_updates) option.
 
 <!-- <img src="images/config.png" width="500" height="auto" alt="Config"> -->
-<img src="https://github.com/kgn3400/pypi_updates/blob/main/images/config.png" width="500" height="auto" alt="Config">
+<img src="/assets/config.png" width="500" height="auto" alt="Config">
 <br/>
 
 ## Exposed state attributes
@@ -34,7 +34,7 @@ The PyPi updates integration provides the following state attributes.
 Using the markdown card with the content of the markdown attribute:
 
 <!-- <img src="images/updates_markdown.png" width="500" height="auto" alt="updates_markdown"> -->
-<img src="https://github.com/kgn3400/pypi_updates/blob/main/images/updates_markdown.png" width="500" height="auto" alt="updates_markdown">
+<img src="/assets/updates_markdown.png" width="500" height="auto" alt="updates_markdown">
 <br/>
 
 ## Actions
