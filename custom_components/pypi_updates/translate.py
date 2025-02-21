@@ -1,7 +1,6 @@
 """Hmmm."""
 
-import os
-import os.path
+from pathlib import Path
 from typing import Any
 
 import aiofiles
@@ -18,6 +17,7 @@ class Translate:
 
     __language: str = ""
     __json_dict: dict[str, Any] = {}
+    acive_language: str = ""
 
     def __init__(self, hass: HomeAssistant, load_only: str = "") -> None:
         """Init."""
@@ -87,25 +87,22 @@ class Translate:
         if Translate.__language != language:
             Translate.__language = language
 
-            filename = os.path.join(
-                os.path.dirname(__file__), "translations", language + file_name
+            filename = (
+                Path(Path(__file__).parent) / "translations" / (language + file_name)
             )
-
-            if os.path.isfile(filename):
-                async with aiofiles.open(filename) as json_file:
+            if filename.is_file():
+                async with aiofiles.open(str(filename)) as json_file:
                     Translate.__json_dict = recursive_flatten(
                         "", orjson.loads(await json_file.read()), load_only
                     )
+                Translate.acive_language = language
                 return
 
-            filename = os.path.join(
-                os.path.dirname(__file__), "translations", "en" + file_name
-            )
-
-            if os.path.isfile(filename):
-                async with aiofiles.open(filename) as json_file:
+            filename = Path(Path(__file__).parent) / "translations" / ("en" + file_name)
+            if filename.is_file():
+                async with aiofiles.open(str(filename)) as json_file:
                     Translate.__json_dict = recursive_flatten(
                         "", orjson.loads(await json_file.read()), load_only
                     )
-
+                Translate.acive_language = "en"
                 return

@@ -106,12 +106,12 @@ async def create_schema(handler: SchemaCommonFlowHandler) -> vol.Schema:
     return vol.Schema(
         {
             vol.Optional(
+                CONF_PYPI_ITEM,
+            ): str,
+            vol.Optional(
                 CONF_PYPI_LIST,
                 default=[],
             ): cv.multi_select(options.get(CONF_PYPI_LIST, [])),
-            vol.Optional(
-                CONF_PYPI_ITEM,
-            ): str,
             vol.Optional(
                 CONF_MD_HEADER_TEMPLATE,
                 default=await Translate(
