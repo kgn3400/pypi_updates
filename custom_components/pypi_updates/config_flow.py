@@ -25,6 +25,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+from homeassistant.util.uuid import random_uuid_hex
 
 from .component_api import FindPyPiPackage, NotFoundException
 from .const import (
@@ -167,6 +168,19 @@ async def create_schema(handler: SchemaCommonFlowHandler) -> vol.Schema:
             ),
         }
     )
+
+
+# ------------------------------------------------------------------
+async def config_schema_handler(
+    handler: SchemaCommonFlowHandler,
+) -> vol.Schema:
+    """Return schema for the sensor config step."""
+
+    if handler.parent_handler.unique_id is None:
+        await handler.parent_handler.async_set_unique_id(random_uuid_hex())
+        handler.parent_handler._abort_if_unique_id_configured()  # noqa: SLF001
+
+    return await create_schema(handler)
 
 
 CONFIG_FLOW = {

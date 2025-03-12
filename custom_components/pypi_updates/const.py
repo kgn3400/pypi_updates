@@ -24,6 +24,3 @@ CONF_MD_NO_UPDATES_TEMPLATE = "md_no_updates_template"
 CONF_DEFAULT_MD_NO_UPDATES_TEMPLATE = "defaults.default_md_no_updates_template"
 
 CONF_ADD_MORE = "add_more"
-
-STORAGE_VERSION = 1
-STORAGE_KEY = DOMAIN
