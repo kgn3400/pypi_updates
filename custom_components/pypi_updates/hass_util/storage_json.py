@@ -1,4 +1,7 @@
-"""Settings handling."""
+"""Json storage.
+
+External imports: jsonpickle
+"""
 
 from collections.abc import Callable
 import inspect
@@ -8,8 +11,6 @@ import jsonpickle
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
-
-from .const import DOMAIN
 
 
 # ------------------------------------------------------------------
@@ -43,12 +44,17 @@ class StoreMigrate(Store):
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
 class StorageJson:
-    """Settings class."""
+    """Json storage class.
+
+    This class is used to store data in a json file.
+
+    External imports: jsonpickle
+    """
 
     def __init__(
         self,
         hass: HomeAssistant,
-        key: str = DOMAIN,
+        key: str,
         version: int = 1,
         minor_version: int = 1,
         async_migrate_func: Callable[[int, int, Any], Any] | None = None,

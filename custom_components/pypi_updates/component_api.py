@@ -26,6 +26,7 @@ from .const import (
     LOGGER,
     TRANSLATION_KEY_TEMPLATE_ERROR,
 )
+from .hass_util import handle_retries
 from .pypi_settings import PyPiBaseItem, PyPiItem, PyPiSettings, PypiStatusTypes
 
 
@@ -320,6 +321,7 @@ class NotFoundException(Exception):
 
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
+@handle_retries(retries=5, retry_delay=5, raise_last_exception=True)
 class FindPyPiPackage:
     """Find Pypi package interface."""
 

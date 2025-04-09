@@ -1,4 +1,7 @@
-"""Hmmm."""
+"""Translate to localized string.
+
+External imports: orjson
+"""
 
 from pathlib import Path
 from typing import Any
@@ -13,9 +16,13 @@ from homeassistant.core import HomeAssistant
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
 class Translate:
-    """Translate."""
+    """Translate to localized string class.
+
+    External imports: orjson
+    """
 
     __language: str = ""
+    __filename: str = ""
     __json_dict: dict[str, Any] = {}
     acive_language: str = ""
 
@@ -84,25 +91,23 @@ class Translate:
                     output[f"{prefix}{key}"] = value
             return output
 
-        if Translate.__language != language:
-            Translate.__language = language
+        filename: Path = (
+            Path(Path(__file__).parent.parent) / "translations" / (language + file_name)
+        )
 
+        if not filename.is_file():
             filename = (
-                Path(Path(__file__).parent) / "translations" / (language + file_name)
+                Path(Path(__file__).parent.parent) / "translations" / ("en" + file_name)
             )
-            if filename.is_file():
-                async with aiofiles.open(str(filename)) as json_file:
-                    Translate.__json_dict = recursive_flatten(
-                        "", orjson.loads(await json_file.read()), load_only
-                    )
-                Translate.acive_language = language
+
+            if not filename.is_file():
                 return
 
-            filename = Path(Path(__file__).parent) / "translations" / ("en" + file_name)
-            if filename.is_file():
-                async with aiofiles.open(str(filename)) as json_file:
-                    Translate.__json_dict = recursive_flatten(
-                        "", orjson.loads(await json_file.read()), load_only
-                    )
-                Translate.acive_language = "en"
-                return
+        if Translate.__filename != str(filename):
+            Translate.__filename = str(filename)
+            Translate.acive_language = language
+
+            async with aiofiles.open(str(filename)) as json_file:
+                Translate.__json_dict = recursive_flatten(
+                    "", orjson.loads(await json_file.read()), load_only
+                )

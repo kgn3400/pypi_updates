@@ -6,7 +6,8 @@ from enum import Enum
 
 from homeassistant.core import HomeAssistant
 
-from .storage_json import StorageJson
+from .const import DOMAIN
+from .hass_util import StorageJson
 
 
 # ------------------------------------------------------
@@ -85,5 +86,5 @@ class PyPiSettings(StorageJson):
     def __init__(self, hass: HomeAssistant) -> None:
         """Pypi settings."""
 
-        super().__init__(hass)
+        super().__init__(hass, DOMAIN)
         self.pypi_list: list[PyPiItem] = []

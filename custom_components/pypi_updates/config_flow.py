@@ -42,7 +42,7 @@ from .const import (
     DOMAIN,
     DOMAIN_NAME,
 )
-from .translate import Translate
+from .hass_util import Translate
 
 tmp_item_list: list[str] = []
 
