@@ -2,7 +2,41 @@
   "title": "PyPi updates",
   "device": {
     "pypi_updates": {
+      "name": "PyPi"
+    }
+  },
+  "entity_component": {
+    "_": {
       "name": "PyPi updates"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "updates": {
+        "state_attributes": {
+          "pypi_updates": {
+            "name": "Updates"
+          },
+          "updates": {
+            "name": "Updates"
+          },
+          "markdown": {
+            "name": "Markdown"
+          },
+          "last_pypi_update_version": {
+            "name": "Last PyPi update version"
+          },
+          "last_pypi_update_old_version": {
+            "name": "Last PyPi update old version"
+          },
+          "last_pypi_update_package_name": {
+            "name": "Last PyPi update package name"
+          },
+          "last_pypi_update_package_url": {
+            "name": "Last PyPi update package url"
+          }
+        }
+      }
     }
   },
   "config": {
@@ -52,32 +86,6 @@
           "md_no_updates_template": "No updates template for markdown text",
           "pypi_item": "PyPi package to add",
           "pypi_list": "PyPi packages to check for updates"
-        }
-      }
-    }
-  },
-  "entity": {
-    "binary_sensor": {
-      "pypi_updates": {
-        "state_attributes": {
-          "pypi_updates": {
-            "name": "PyPi updates"
-          },
-          "markdown": {
-            "name": "Markdown"
-          },
-          "last_pypi_update_version": {
-            "name": "Last PyPi update version"
-          },
-          "last_pypi_update_old_version": {
-            "name": "Last PyPi update old version"
-          },
-          "last_pypi_update_package_name": {
-            "name": "Last PyPi update package name"
-          },
-          "last_pypi_update_package_url": {
-            "name": "Last PyPi update package url"
-          }
         }
       }
     }

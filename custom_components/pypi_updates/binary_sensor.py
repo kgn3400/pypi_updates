@@ -12,7 +12,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import CommonConfigEntry
 from .component_api import ComponentApi
-from .const import TRANSLATION_KEY
 from .entity import ComponentEntity
 
 
@@ -50,24 +49,26 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
 
         self.coordinator.update_method = self.component_api.async_update
         self.coordinator.update_interval = timedelta(minutes=10)
+        self.entry: CommonConfigEntry = entry
 
-        self.translation_key = TRANSLATION_KEY
+        self.hass: HomeAssistant = hass
+        self.translation_key = "updates"
 
-        self._name = "Pypi updates"
-        self._unique_id = "pypi_updates"
+        # self._name = "Pypi updates"
+        # self._unique_id = "pypi_updates"
 
         self.coordinator.setup_method = self.component_api.async_setup
 
     # ------------------------------------------------------
-    @property
-    def name(self) -> str:
-        """Name.
+    # @property
+    # def name(self) -> str:
+    #     """Name.
 
-        Returns:
-            str: Name of sensor
+    #     Returns:
+    #         str: Name of sensor
 
-        """
-        return self._name
+    #     """
+    #     return self._name
 
     @property
     def is_on(self) -> bool:
@@ -86,7 +87,7 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
             "last_pypi_update_package_url": f"https://pypi.org/project/{self.component_api.last_pypi_update.package_name}/"
             if self.component_api.last_pypi_update.package_name
             else "",
-            "pypi_updates": [
+            "updates": [
                 PyPiBaseItem(x.package_name, x.version, x.old_version)
                 for x in self.component_api.settings.pypi_list
                 if x.status == PypiStatusTypes.UPDATED
@@ -103,7 +104,7 @@ class PypiUpdatesBinarySensor(ComponentEntity, BinarySensorEntity):
             str: Unique id
 
         """
-        return self._unique_id
+        return self.entry.entry_id
 
     # ------------------------------------------------------
     @property

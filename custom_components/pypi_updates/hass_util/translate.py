@@ -1,6 +1,6 @@
 """Translate to localized string.
 
-External imports: orjson
+External imports: aiofiles, orjson
 """
 
 from pathlib import Path

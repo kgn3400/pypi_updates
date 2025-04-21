@@ -1,7 +1,7 @@
 {
   "entity": {
     "binary_sensor": {
-      "pypi_updates": {
+      "updates": {
         "default": "mdi:package-variant"
       }
     }

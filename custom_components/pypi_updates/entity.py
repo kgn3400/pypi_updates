@@ -10,13 +10,13 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
-from .const import DOMAIN, DOMAIN_NAME
+from .const import DOMAIN, DOMAIN_NAME, TRANSLATION_KEY
 
 
 class ComponentEntity(CoordinatorEntity[DataUpdateCoordinator], Entity):
     """Defines a Hiper driftsstatus entity."""
 
-    _attr_has_entity_name = False
+    _attr_has_entity_name = True
 
     def __init__(
         self,
@@ -28,7 +28,7 @@ class ComponentEntity(CoordinatorEntity[DataUpdateCoordinator], Entity):
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, entry.entry_id)},
-            # translation_key=TRANSLATION_KEY,
+            translation_key=TRANSLATION_KEY,
             manufacturer="KGN",
             suggested_area="",
             sw_version="1.0",

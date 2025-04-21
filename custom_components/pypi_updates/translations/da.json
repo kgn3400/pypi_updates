@@ -2,7 +2,39 @@
   "title": "PyPi opdateringer",
   "device": {
     "pypi_updates": {
+      "name": "PyPi"
+    }
+  },
+  "entity_component": {
+    "_": {
       "name": "PyPi opdateringer"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "updates": {
+        "name": "Opdateringer",
+        "state_attributes": {
+          "updates": {
+            "name": "Opdateringer"
+          },
+          "markdown": {
+            "name": "Markdown"
+          },
+          "last_pypi_update_version": {
+            "name": "Sidste PyPi opdatering version"
+          },
+          "last_pypi_update_old_version": {
+            "name": "Sidste PyPi opdatering old version"
+          },
+          "last_pypi_update_package_name": {
+            "name": "Sidste PyPi opdatering pakke navn"
+          },
+          "last_pypi_update_package_url": {
+            "name": "Sidste PyPi opdatering pakke url"
+          }
+        }
+      }
     }
   },
   "config": {
@@ -52,32 +84,6 @@
           "md_no_updates_template": "Ingen opdateringer template til markdown tekst",
           "pypi_item": "PyPi pakke som skal tilføjes",
           "pypi_list": "PyPi pakker som skal checkes for opdateringer"
-        }
-      }
-    }
-  },
-  "entity": {
-    "binary_sensor": {
-      "pypi_updates": {
-        "state_attributes": {
-          "pypi_updates": {
-            "name": "PyPi opdateringer"
-          },
-          "markdown": {
-            "name": "Markdown"
-          },
-          "last_pypi_update_version": {
-            "name": "Sidste PyPi opdatering version"
-          },
-          "last_pypi_update_old_version": {
-            "name": "Sidste PyPi opdatering old version"
-          },
-          "last_pypi_update_package_name": {
-            "name": "Sidste PyPi opdatering pakke navn"
-          },
-          "last_pypi_update_package_url": {
-            "name": "Sidste PyPi opdatering pakke url"
-          }
         }
       }
     }
