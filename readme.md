@@ -54,3 +54,7 @@ Reset notification about new updates.
 ### Action pypi_updates.check_pypi
 
 CHeck for new updates.
+
+### Support
+
+If you like this integration or find it useful, please consider giving it a ⭐️ on GitHub 👍 Your support is greatly appreciated!
