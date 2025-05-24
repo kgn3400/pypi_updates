@@ -10,7 +10,7 @@
 # PyPi updates
 
 <br/>
-The PyPi updates integration allows you to monitor a list of PyPi package and get notified when a updates is available.
+The PyPi Updates integration makes it easy to stay up-to-date with your Python dependencies. Simply add the PyPi packages you want to monitor, and the integration will automatically check for new versions. Whenever an update is available, you’ll receive a notification—so you’ll never miss an important security patch or feature release. Keep your environment secure and your packages current with the PyPi Updates integration!
 
 ## Installation
 
@@ -23,7 +23,7 @@ Then click to
 
 ## Configuration
 
-Configuration is setup via UI in Home assistant. To add one, go to [Settings > Devices & Services](https://my.home-assistant.io/redirect/integrations) and click the add button. Next choose the [PyPi updates](https://my.home-assistant.io/redirect/config_flow_start?domain=pypi_updates) option.
+Configuration is done through the Home Assistant UI. To add a new entry, simply go to [Settings > Devices & Services](https://my.home-assistant.io/redirect/integrations) and click the add button. Next choose the [PyPi updates](https://my.home-assistant.io/redirect/config_flow_start?domain=pypi_updates) option.
 
 <!-- <img src="images/config.png" width="500" height="auto" alt="Config"> -->
 <img src="https://kgn3400.github.io/pypi_updates/assets/config.png" width="500" height="auto" alt="Config">
@@ -40,7 +40,6 @@ The PyPi updates integration provides the following state attributes.
 
 Using the markdown card with the content of the markdown attribute:
 
-<!-- <img src="images/updates_markdown.png" width="500" height="auto" alt="updates_markdown"> -->
 <img src="https://kgn3400.github.io/pypi_updates/assets/updates_markdown.png" width="500" height="auto" alt="updates_markdown">
 <br/>
 
