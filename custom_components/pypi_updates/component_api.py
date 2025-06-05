@@ -321,11 +321,11 @@ class NotFoundException(Exception):
 
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
-@handle_retries(retries=5, retry_delay=5, raise_last_exception=True)
 class FindPyPiPackage:
     """Find Pypi package interface."""
 
     # ------------------------------------------------------------------
+    @handle_retries(retries=5, retry_delay=5, raise_last_exception=True)
     async def async_get_package_version(
         self, session: ClientSession | None, package: str
     ) -> str:
